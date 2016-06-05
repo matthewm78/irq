@@ -8,6 +8,7 @@ class Irq:
         self.num_interrupts_per_cpu = num_interrupts_per_cpu
 
 def parse_proc_interrupts_line(interrupts_line):
+    print(interrupts_line)
     interrupts_line_regex = re.compile('(\d+):\s+(\d+)\s+(\d+)\s+([\w-]+)\s+(.*)')
     interrupts_line_match = interrupts_line_regex.search(interrupts_line)
 
