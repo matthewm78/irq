@@ -18,10 +18,6 @@ class IrqBalanceTest(unittest.TestCase):
 
     COMPLETE_IRQ_LINE = '{} {}'.format(DUMMY_IRQ_LINE_BASE, DUMMY_DEVICE_NAME)
 
-    # IRQ_ETH0_WITH_ZERO_SUFFIX = ' eth0-TxRx-0'
-    # IRQ_ETH0_WITH_ONE_SUFFIX =' eth0-TxRx-1'
-    # IRQ_ETH1_WITH_SUFFIX = ' eth1-TxRx-0'
-
     # IRQ_LEAST_WHITESPACE = '136: 3320311515           1430447281   IR-PCI-MSI-edge      eth0-TxRx-4'
     # IRQ_MOST_WHITESPACE = '164:       9232                25456   IR-PCI-MSI-edge      eth0'
 
@@ -44,3 +40,22 @@ class IrqBalanceTest(unittest.TestCase):
             self.get_dummy_irq_line_with_device_name('eth0'))
 
         self.assertEqual('eth0', tmp_irq.device_name)
+
+    def test_parse_proc_interrupts_line_eth0_with_zero_suffix(self):
+        tmp_irq = irqbalance.parse_proc_interrupts_line(
+            self.get_dummy_irq_line_with_device_name('eth0-TxRx-0'))
+
+        self.assertEqual('eth0-TxRx-0', tmp_irq.device_name)
+
+    def test_parse_proc_interrupts_line_eth0_with_one_suffix(self):
+        tmp_irq = irqbalance.parse_proc_interrupts_line(
+            self.get_dummy_irq_line_with_device_name('eth0-TxRx-1'))
+
+        self.assertEqual('eth0-TxRx-1', tmp_irq.device_name)
+
+    def test_parse_proc_interrupts_line_eth1_with_suffix(self):
+        tmp_irq = irqbalance.parse_proc_interrupts_line(
+            self.get_dummy_irq_line_with_device_name('eth1-TxRx-0'))
+
+        self.assertEqual('eth1-TxRx-0', tmp_irq.device_name)
+
