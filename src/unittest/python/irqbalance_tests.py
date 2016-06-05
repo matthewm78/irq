@@ -18,9 +18,6 @@ class IrqBalanceTest(unittest.TestCase):
 
     COMPLETE_IRQ_LINE = '{} {}'.format(DUMMY_IRQ_LINE_BASE, DUMMY_DEVICE_NAME)
 
-    # IRQ_LEAST_WHITESPACE = '136: 3320311515           1430447281   IR-PCI-MSI-edge      eth0-TxRx-4'
-    # IRQ_MOST_WHITESPACE = '164:       9232                25456   IR-PCI-MSI-edge      eth0'
-
     def get_dummy_irq_line_with_device_name(self, device_name):
         return '{} {}'.format(self.DUMMY_IRQ_LINE_BASE, device_name)
 
@@ -58,4 +55,28 @@ class IrqBalanceTest(unittest.TestCase):
             self.get_dummy_irq_line_with_device_name('eth1-TxRx-0'))
 
         self.assertEqual('eth1-TxRx-0', tmp_irq.device_name)
+
+    def test_parse_proc_interrupts_line_real_line_least_whitespace(self):
+        IRQ_LEAST_WHITESPACE = '136: 3320311515           1430447281   IR-PCI-MSI-edge      eth0-TxRx-4'
+        tmp_irq = irqbalance.parse_proc_interrupts_line(IRQ_LEAST_WHITESPACE)
+
+        self.assertEqual("136", tmp_irq.irq_num)
+        self.assertEqual('eth0-TxRx-4', tmp_irq.device_name)
+        self.assertEqual("IR-PCI-MSI-edge", tmp_irq.irq_type)
+
+        self.assertEqual(2, len(tmp_irq.num_interrupts_per_cpu))
+        self.assertEqual(3320311515, tmp_irq.num_interrupts_per_cpu[0])
+        self.assertEqual(1430447281, tmp_irq.num_interrupts_per_cpu[1])
+
+    def test_parse_proc_interrupts_line_real_line_most_whitespace(self):
+        IRQ_MOST_WHITESPACE = '164:       9232                25456   IR-PCI-MSI-edge      eth0'
+        tmp_irq = irqbalance.parse_proc_interrupts_line(IRQ_MOST_WHITESPACE)
+
+        self.assertEqual("164", tmp_irq.irq_num)
+        self.assertEqual('eth0', tmp_irq.device_name)
+        self.assertEqual("IR-PCI-MSI-edge", tmp_irq.irq_type)
+
+        self.assertEqual(2, len(tmp_irq.num_interrupts_per_cpu))
+        self.assertEqual(9232, tmp_irq.num_interrupts_per_cpu[0])
+        self.assertEqual(25456, tmp_irq.num_interrupts_per_cpu[1])
 
