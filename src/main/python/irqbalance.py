@@ -12,6 +12,17 @@ class Irq:
         return sum(self.num_interrupts_per_cpu)
 
 class ProcInterruptsParser:
+
+    def parse_file(self, proc_interrupts_file):
+        irqs = []
+
+        with open(proc_interrupts_file) as pif:
+            for line in pif:
+                tmp_irq = self.parse_line(line)
+                irqs.append(tmp_irq)
+
+        return irqs
+
     def parse_line(self, interrupts_line):
         interrupts_line_regex = re.compile('(\d+):\s+(\d+)\s+(\d+)\s+([\w-]+)\s+(.*)')
         interrupts_line_match = interrupts_line_regex.search(interrupts_line)
