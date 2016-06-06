@@ -26,7 +26,7 @@ class IrqTest(unittest.TestCase):
 class IrqBalancerTest(unittest.TestCase):
 
     def setUp(self):
-        self.irq_balancer = irqbalance.IrqBalancer()
+        self.irq_balancer = irqbalance.IrqBalancer(2)
 
     def test_balance_irqs_single_irq(self):
         tmp_irq =  irqbalance.Irq("1", None, None, [100, 100])
