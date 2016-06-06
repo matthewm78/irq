@@ -29,5 +29,11 @@ if __name__ == '__main__':
     import sys
 
     proc_interrupts_file = sys.argv[1]
-    balance_irqs_out = balance_irqs(proc_interrupts_file)
+
+    proc_interrupts_parser = ProcInterruptsParser()
+    parsed_irqs = proc_interrupts_parser.parse_irqs(proc_interrupts_file)
+
+    irq_balancer = IrqBalancer()
+    balance_irqs_out = irq_balancer.balance(parsed_irqs)
+
     print(balance_irqs_out)
