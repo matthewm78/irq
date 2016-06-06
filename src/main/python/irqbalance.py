@@ -7,6 +7,10 @@ class Irq:
         self.irq_type = irq_type
         self.num_interrupts_per_cpu = num_interrupts_per_cpu
 
+    @property
+    def total_num_interrupts(self):
+        return sum(self.num_interrupts_per_cpu)
+
 def parse_proc_interrupts_line(interrupts_line):
     print(interrupts_line)
     interrupts_line_regex = re.compile('(\d+):\s+(\d+)\s+(\d+)\s+([\w-]+)\s+(.*)')

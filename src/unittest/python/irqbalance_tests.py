@@ -1,7 +1,27 @@
 import unittest
 import irqbalance
 
-class IrqBalanceTest(unittest.TestCase):
+class IrqTest(unittest.TestCase):
+
+    def test_total_num_interrupts(self):
+        num_interrupts_per_cpu = [1, 2]
+        tmp_irq = irqbalance.Irq(None, None, None, num_interrupts_per_cpu)
+
+        self.assertEqual(3, tmp_irq.total_num_interrupts)
+
+    def test_total_num_interrupts_when_cpu1_is_zero(self):
+        num_interrupts_per_cpu = [1, 0]
+        tmp_irq = irqbalance.Irq(None, None, None, num_interrupts_per_cpu)
+
+        self.assertEqual(1, tmp_irq.total_num_interrupts)
+
+    def test_total_num_interrupts_when_cpu0_is_zero(self):
+        num_interrupts_per_cpu = [0, 1]
+        tmp_irq = irqbalance.Irq(None, None, None, num_interrupts_per_cpu)
+
+        self.assertEqual(1, tmp_irq.total_num_interrupts)
+
+class ProcInterruptsParserTest(unittest.TestCase):
 
     # Example lines below based off of fictious /proc/interrupts line:
     #  100:       123                456   irq-type      device-name
