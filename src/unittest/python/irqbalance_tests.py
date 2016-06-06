@@ -43,8 +43,11 @@ class ProcInterruptsParserTest(unittest.TestCase):
     def get_dummy_irq_line_with_device_name(self, device_name):
         return '{} {}'.format(self.DUMMY_IRQ_LINE_BASE, device_name)
 
+    def setUp(self):
+        self.proc_interrupts_parser = irqbalance.ProcInterruptsParser()
+
     def test_parse_proc_interrupts_line_complete_line(self):
-        tmp_irq = irqbalance.parse_proc_interrupts_line(self.COMPLETE_IRQ_LINE)
+        tmp_irq = self.proc_interrupts_parser.parse_line(self.COMPLETE_IRQ_LINE)
 
         self.assertEqual(self.DUMMY_IRQ_NUM, tmp_irq.irq_num)
         self.assertEqual(self.DUMMY_DEVICE_NAME, tmp_irq.device_name)
@@ -55,32 +58,32 @@ class ProcInterruptsParserTest(unittest.TestCase):
         self.assertEqual(self.DUMMY_NUM_INTERRUPTS_CPU1, tmp_irq.num_interrupts_per_cpu[1])
 
     def test_parse_proc_interrupts_line_eth0_without_suffix(self):
-        tmp_irq = irqbalance.parse_proc_interrupts_line(
+        tmp_irq = self.proc_interrupts_parser.parse_line(
             self.get_dummy_irq_line_with_device_name('eth0'))
 
         self.assertEqual('eth0', tmp_irq.device_name)
 
     def test_parse_proc_interrupts_line_eth0_with_zero_suffix(self):
-        tmp_irq = irqbalance.parse_proc_interrupts_line(
+        tmp_irq = self.proc_interrupts_parser.parse_line(
             self.get_dummy_irq_line_with_device_name('eth0-TxRx-0'))
 
         self.assertEqual('eth0-TxRx-0', tmp_irq.device_name)
 
     def test_parse_proc_interrupts_line_eth0_with_one_suffix(self):
-        tmp_irq = irqbalance.parse_proc_interrupts_line(
+        tmp_irq = self.proc_interrupts_parser.parse_line(
             self.get_dummy_irq_line_with_device_name('eth0-TxRx-1'))
 
         self.assertEqual('eth0-TxRx-1', tmp_irq.device_name)
 
     def test_parse_proc_interrupts_line_eth1_with_suffix(self):
-        tmp_irq = irqbalance.parse_proc_interrupts_line(
+        tmp_irq = self.proc_interrupts_parser.parse_line(
             self.get_dummy_irq_line_with_device_name('eth1-TxRx-0'))
 
         self.assertEqual('eth1-TxRx-0', tmp_irq.device_name)
 
     def test_parse_proc_interrupts_line_real_line_least_whitespace(self):
         IRQ_LEAST_WHITESPACE = '136: 3320311515           1430447281   IR-PCI-MSI-edge      eth0-TxRx-4'
-        tmp_irq = irqbalance.parse_proc_interrupts_line(IRQ_LEAST_WHITESPACE)
+        tmp_irq = self.proc_interrupts_parser.parse_line(IRQ_LEAST_WHITESPACE)
 
         self.assertEqual("136", tmp_irq.irq_num)
         self.assertEqual('eth0-TxRx-4', tmp_irq.device_name)
@@ -92,7 +95,7 @@ class ProcInterruptsParserTest(unittest.TestCase):
 
     def test_parse_proc_interrupts_line_real_line_most_whitespace(self):
         IRQ_MOST_WHITESPACE = '164:       9232                25456   IR-PCI-MSI-edge      eth0'
-        tmp_irq = irqbalance.parse_proc_interrupts_line(IRQ_MOST_WHITESPACE)
+        tmp_irq = self.proc_interrupts_parser.parse_line(IRQ_MOST_WHITESPACE)
 
         self.assertEqual("164", tmp_irq.irq_num)
         self.assertEqual('eth0', tmp_irq.device_name)
