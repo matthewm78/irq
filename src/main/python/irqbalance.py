@@ -1,4 +1,5 @@
 import re
+import operator
 
 class Irq:
     def __init__(self, irq_num, device_name, irq_type, num_interrupts_per_cpu):
@@ -16,26 +17,35 @@ class IrqBalancingRecommendation:
 
     def __init__(self, num_cpus):
         self.num_cpus = num_cpus
-        self.irqs_for_cpu = [ [] ] * num_cpus
+        self.irqs_for_cpu = [[] for x in range(0, num_cpus)]
 
-    def set_irqs_for_cpu(self, cpu_num, irqs):
-        self.irqs_for_cpu[cpu_num] = irqs
+    def add_irq_num_to_cpu(self, cpu_num, irq_num):
+        print("Addiing num [{}] for cpu [{}]".format(irq_num,cpu_num))
+        self.irqs_for_cpu[cpu_num].append(irq_num)
 
     def get_irqs_for_cpu(self, cpu_num):
+        print("Getting -> {}".format(self.irqs_for_cpu))
         return self.irqs_for_cpu[cpu_num]
 
 
 class IrqBalancer:
 
     def __init__(self, num_cpus):
-        self.num_cpus = 2
+        self.num_cpus = num_cpus
 
     def balance_irqs(self, irqs):
         recommendation = IrqBalancingRecommendation(self.num_cpus)
-        recommendation.set_irqs_for_cpu(0, [irqs[0].irq_num])
+        irqs_sorted_by_total_interrupts = self.sort_irqs_by_total(irqs)
+
+        tmp_cpu_num = 0
+        for irq in irqs_sorted_by_total_interrupts:
+            recommendation.add_irq_num_to_cpu(tmp_cpu_num % self.num_cpus, irq.irq_num)
+            tmp_cpu_num += 1
 
         return recommendation
 
+    def sort_irqs_by_total(self, unsorted_irqs):
+        return sorted(unsorted_irqs, key=operator.attrgetter('total_num_interrupts'), reverse=True)
 
 class ProcInterruptsParser:
 
@@ -71,6 +81,6 @@ if __name__ == '__main__':
     parsed_irqs = proc_interrupts_parser.parse_interrupts_file(proc_interrupts_file)
 
     irq_balancer = IrqBalancer(2)
-    balance_irqs_out = irq_balancer.balance(parsed_irqs)
+    balance_irqs_out = irq_balancer.balance_irqs(parsed_irqs)
 
-    print(balance_irqs_out)
+    print(balance_irqs_out.get_irqs_for_cpu(0))
