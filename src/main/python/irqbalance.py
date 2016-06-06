@@ -24,3 +24,10 @@ def parse_proc_interrupts_line(interrupts_line):
     num_interrupts_per_cpu = [num_interrupts_cpu0, num_interrupts_cpu1]
 
     return Irq(irq_num, device_name, irq_type, num_interrupts_per_cpu)
+
+if __name__ == '__main__':
+    import sys
+
+    proc_interrupts_file = sys.argv[1]
+    balance_irqs_out = balance_irqs(proc_interrupts_file)
+    print(balance_irqs_out)

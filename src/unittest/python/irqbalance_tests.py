@@ -1,6 +1,7 @@
 import unittest
 import irqbalance
 
+
 class IrqTest(unittest.TestCase):
 
     def test_total_num_interrupts(self):
@@ -20,6 +21,7 @@ class IrqTest(unittest.TestCase):
         tmp_irq = irqbalance.Irq(None, None, None, num_interrupts_per_cpu)
 
         self.assertEqual(1, tmp_irq.total_num_interrupts)
+
 
 class ProcInterruptsParserTest(unittest.TestCase):
 
