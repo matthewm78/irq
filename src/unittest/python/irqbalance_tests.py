@@ -23,6 +23,19 @@ class IrqTest(unittest.TestCase):
         self.assertEqual(1, tmp_irq.total_num_interrupts)
 
 
+class IrqBalancerTest(unittest.TestCase):
+
+    def setUp(self):
+        self.irq_balancer = irqbalance.IrqBalancer()
+
+    def test_balance_irqs_single_irq(self):
+        tmp_irq =  irqbalance.Irq("1", None, None, [100, 100])
+        irq_balancing_recommendation = self.irq_balancer.balance_irqs([tmp_irq])
+
+        self.assertEquals(["1"], irq_balancing_recommendation.get_irqs_for_cpu(0))
+        self.assertEquals([], irq_balancing_recommendation.get_irqs_for_cpu(1))
+
+
 class ProcInterruptsParserTest(unittest.TestCase):
 
     # Example lines below based off of fictious /proc/interrupts line:

@@ -11,9 +11,30 @@ class Irq:
     def total_num_interrupts(self):
         return sum(self.num_interrupts_per_cpu)
 
+
+class IrqBalancingRecommendation:
+    def __init__(self):
+        self.irqs_for_cpu = [ [] ] * 2
+
+    def set_irqs_for_cpu(self, cpu_num, irqs):
+        self.irqs_for_cpu[cpu_num] = irqs
+
+    def get_irqs_for_cpu(self, cpu_num):
+        return self.irqs_for_cpu[cpu_num]
+
+
+class IrqBalancer:
+
+    def balance_irqs(self, irqs):
+        recommendation = IrqBalancingRecommendation()
+        recommendation.set_irqs_for_cpu(0, [irqs[0].irq_num])
+
+        return recommendation
+
+
 class ProcInterruptsParser:
 
-    def parse_file(self, proc_interrupts_file):
+    def parse_interrupts_file(self, proc_interrupts_file):
         irqs = []
 
         with open(proc_interrupts_file) as pif:
@@ -42,7 +63,7 @@ if __name__ == '__main__':
     proc_interrupts_file = sys.argv[1]
 
     proc_interrupts_parser = ProcInterruptsParser()
-    parsed_irqs = proc_interrupts_parser.parse_irqs(proc_interrupts_file)
+    parsed_irqs = proc_interrupts_parser.parse_interrupts_file(proc_interrupts_file)
 
     irq_balancer = IrqBalancer()
     balance_irqs_out = irq_balancer.balance(parsed_irqs)

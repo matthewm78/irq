@@ -8,7 +8,8 @@ class ProcInterruptsParserIntegrationTest(unittest.TestCase):
         self.proc_interrupts_parser = irqbalance.ProcInterruptsParser()
 
     def test_parse_file(self):
-        tmp_irqs = self.proc_interrupts_parser.parse_file('src/unittest/python/basic_proc_interrupts.txt')
+        tmp_irqs = self.proc_interrupts_parser.parse_interrupts_file(
+            'src/unittest/python/basic_proc_interrupts.txt')
 
         self.assertEquals(2, len(tmp_irqs))
 
