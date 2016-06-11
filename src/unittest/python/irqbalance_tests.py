@@ -32,8 +32,11 @@ class IrqBalancerTest(unittest.TestCase):
         tmp_irq =  irqbalance.Irq("1", None, None, [100, 100])
         irq_balancing_recommendation = self.irq_balancer.balance_irqs([tmp_irq])
 
-        self.assertEquals(["1"], irq_balancing_recommendation.get_irqs_for_cpu(0))
-        self.assertEquals([], irq_balancing_recommendation.get_irqs_for_cpu(1))
+        cpu0_irqs = irq_balancing_recommendation.get_irqs_for_cpu(0)
+        self.assertEquals(["1"], [irq.irq_num for irq in cpu0_irqs])
+
+        cpu1_irqs = irq_balancing_recommendation.get_irqs_for_cpu(1)
+        self.assertEquals([], cpu1_irqs)
 
     def test_balance_irqs_two_irqs_in_order(self):
         tmp_irqs = []
@@ -41,8 +44,11 @@ class IrqBalancerTest(unittest.TestCase):
         tmp_irqs.append(irqbalance.Irq("2", None, None, [100, 100]))
         irq_balancing_recommendation = self.irq_balancer.balance_irqs(tmp_irqs)
 
-        self.assertEquals(["1"], irq_balancing_recommendation.get_irqs_for_cpu(0))
-        self.assertEquals(["2"], irq_balancing_recommendation.get_irqs_for_cpu(1))
+        cpu0_irqs = irq_balancing_recommendation.get_irqs_for_cpu(0)
+        self.assertEquals(["1"], [irq.irq_num for irq in cpu0_irqs])
+
+        cpu1_irqs = irq_balancing_recommendation.get_irqs_for_cpu(1)
+        self.assertEquals(["2"], [irq.irq_num for irq in cpu1_irqs])
 
     def test_balance_irqs_two_irqs_out_of_order(self):
         tmp_irqs = []
@@ -50,8 +56,11 @@ class IrqBalancerTest(unittest.TestCase):
         tmp_irqs.append(irqbalance.Irq("2", None, None, [200, 200]))
         irq_balancing_recommendation = self.irq_balancer.balance_irqs(tmp_irqs)
 
-        self.assertEquals(["2"], irq_balancing_recommendation.get_irqs_for_cpu(0))
-        self.assertEquals(["1"], irq_balancing_recommendation.get_irqs_for_cpu(1))
+        cpu0_irqs = irq_balancing_recommendation.get_irqs_for_cpu(0)
+        self.assertEquals(["2"], [irq.irq_num for irq in cpu0_irqs])
+
+        cpu1_irqs = irq_balancing_recommendation.get_irqs_for_cpu(1)
+        self.assertEquals(["1"], [irq.irq_num for irq in cpu1_irqs])
 
     def test_balance_irqs_many_irqs_out_of_order(self):
         tmp_irqs = []
@@ -60,9 +69,11 @@ class IrqBalancerTest(unittest.TestCase):
         tmp_irqs.append(irqbalance.Irq("3", None, None, [10, 10]))
         irq_balancing_recommendation = self.irq_balancer.balance_irqs(tmp_irqs)
 
-        self.assertEquals(["2", "3"], irq_balancing_recommendation.get_irqs_for_cpu(0))
-        self.assertEquals(["1"], irq_balancing_recommendation.get_irqs_for_cpu(1))
+        cpu0_irqs = irq_balancing_recommendation.get_irqs_for_cpu(0)
+        self.assertEquals(["2", "3"], [irq.irq_num for irq in cpu0_irqs])
 
+        cpu1_irqs = irq_balancing_recommendation.get_irqs_for_cpu(1)
+        self.assertEquals(["1"], [irq.irq_num for irq in cpu1_irqs])
 
 
 class ProcInterruptsParserTest(unittest.TestCase):

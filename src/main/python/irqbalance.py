@@ -22,7 +22,8 @@ class IrqBalancingRecommendationPrinter:
         num_cpus = recommendation.num_cpus
         for cpu_num in range(0, num_cpus):
             irqs_for_cpu = recommendation.get_irqs_for_cpu(cpu_num)
-            table.add_row([cpu_num, ",".join(irqs_for_cpu)])
+            irq_nums_for_cpu = [irq.irq_num for irq in irqs_for_cpu]
+            table.add_row([cpu_num, ",".join(irq_nums_for_cpu)])
 
         output_stream.write(table.get_string() + "\n")
 
@@ -33,8 +34,8 @@ class IrqBalancingRecommendation:
         self.num_cpus = num_cpus
         self.irqs_for_cpu = [[] for x in range(0, num_cpus)]
 
-    def add_irq_num_to_cpu(self, cpu_num, irq_num):
-        self.irqs_for_cpu[cpu_num].append(irq_num)
+    def pin_irq_to_cpu(self, cpu_num, irq):
+        self.irqs_for_cpu[cpu_num].append(irq)
 
     def get_irqs_for_cpu(self, cpu_num):
         return self.irqs_for_cpu[cpu_num]
@@ -51,12 +52,12 @@ class IrqBalancer:
 
         counter = 0
         while len(irqs_sorted_by_total_interrupts) > 0:
-            irq_num_with_next_max_interrupts = irqs_sorted_by_total_interrupts.pop().irq_num
+            irq_with_next_max_interrupts = irqs_sorted_by_total_interrupts.pop()
             num_next_cpu_in_rotation = counter % self.num_cpus
 
-            recommendation.add_irq_num_to_cpu(
+            recommendation.pin_irq_to_cpu(
                 num_next_cpu_in_rotation,
-                irq_num_with_next_max_interrupts)
+                irq_with_next_max_interrupts)
 
             counter += 1
 
