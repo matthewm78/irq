@@ -49,15 +49,21 @@ class IrqBalancer:
         recommendation = IrqBalancingRecommendation(self.num_cpus)
         irqs_sorted_by_total_interrupts = self.sort_irqs_by_total(irqs)
 
-        tmp_cpu_num = 0
-        for irq in irqs_sorted_by_total_interrupts:
-            recommendation.add_irq_num_to_cpu(tmp_cpu_num % self.num_cpus, irq.irq_num)
-            tmp_cpu_num += 1
+        counter = 0
+        while len(irqs_sorted_by_total_interrupts) > 0:
+            irq_num_with_next_max_interrupts = irqs_sorted_by_total_interrupts.pop().irq_num
+            num_next_cpu_in_rotation = counter % self.num_cpus
+
+            recommendation.add_irq_num_to_cpu(
+                num_next_cpu_in_rotation,
+                irq_num_with_next_max_interrupts)
+
+            counter += 1
 
         return recommendation
 
     def sort_irqs_by_total(self, unsorted_irqs):
-        return sorted(unsorted_irqs, key=operator.attrgetter('total_num_interrupts'), reverse=True)
+        return sorted(unsorted_irqs, key=operator.attrgetter('total_num_interrupts'), reverse=False)
 
 class ProcInterruptsParser:
 
