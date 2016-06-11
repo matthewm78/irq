@@ -49,15 +49,15 @@ class IrqBalancer:
 
 class ProcInterruptsParser:
 
-    def parse_interrupts_file(self, proc_interrupts_file):
-        irqs = []
+    def parse_file(self, proc_interrupts_file):
+        parsed_irqs = []
 
         with open(proc_interrupts_file) as pif:
             for line in pif:
-                tmp_irq = self.parse_line(line)
-                irqs.append(tmp_irq)
+                parsed_irq = self.parse_line(line)
+                parsed_irqs.append(parsed_irq)
 
-        return irqs
+        return parsed_irqs
 
     def parse_line(self, interrupts_line):
         interrupts_line_regex = re.compile('(\d+):\s+(\d+)\s+(\d+)\s+([\w-]+)\s+(.*)')
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     proc_interrupts_file = sys.argv[1]
 
     proc_interrupts_parser = ProcInterruptsParser()
-    parsed_irqs = proc_interrupts_parser.parse_interrupts_file(proc_interrupts_file)
+    parsed_irqs = proc_interrupts_parser.parse_file(proc_interrupts_file)
 
     irq_balancer = IrqBalancer(2)
     balance_irqs_out = irq_balancer.balance_irqs(parsed_irqs)
