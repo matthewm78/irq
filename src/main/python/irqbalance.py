@@ -1,5 +1,6 @@
 import re
 import operator
+from prettytable import PrettyTable
 
 class Irq:
     def __init__(self, irq_num, device_name, irq_type, num_interrupts_per_cpu):
@@ -13,6 +14,19 @@ class Irq:
         return sum(self.num_interrupts_per_cpu)
 
 
+class IrqBalancingRecommendationPrinter:
+
+    def print_recommendation(self, recommendation, output_stream):
+        table = PrettyTable(['Cpu #', 'Pinned IRQs'])
+
+        num_cpus = recommendation.num_cpus
+        for cpu_num in range(0, num_cpus):
+            irqs_for_cpu = recommendation.get_irqs_for_cpu(cpu_num)
+            table.add_row([cpu_num, ",".join(irqs_for_cpu)])
+
+        output_stream.write(table.get_string() + "\n")
+
+
 class IrqBalancingRecommendation:
 
     def __init__(self, num_cpus):
@@ -20,11 +34,9 @@ class IrqBalancingRecommendation:
         self.irqs_for_cpu = [[] for x in range(0, num_cpus)]
 
     def add_irq_num_to_cpu(self, cpu_num, irq_num):
-        print("Addiing num [{}] for cpu [{}]".format(irq_num,cpu_num))
         self.irqs_for_cpu[cpu_num].append(irq_num)
 
     def get_irqs_for_cpu(self, cpu_num):
-        print("Getting -> {}".format(self.irqs_for_cpu))
         return self.irqs_for_cpu[cpu_num]
 
 
@@ -83,4 +95,5 @@ if __name__ == '__main__':
     irq_balancer = IrqBalancer(2)
     balance_irqs_out = irq_balancer.balance_irqs(parsed_irqs)
 
-    print(balance_irqs_out.get_irqs_for_cpu(0))
+    recommendation_printer = IrqBalancingRecommendationPrinter()
+    recommendation_printer.print_recommendation(balance_irqs_out, sys.stdout)
