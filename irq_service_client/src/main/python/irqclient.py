@@ -6,14 +6,21 @@ class InterruptTotals:
         self.num_interrupts_per_cpu = num_interrupts_per_cpu
 
 
+class IrqServiceApi:
+    def __init__(self):
+        pass
+
+    def do_get(self, path):
+        return {}
+
+
 class IrqClient:
 
     def __init__(self, api):
         self.api = api
 
     def get_interrupt_totals(self):
-        response = self.api.do_get("/interrupts")
-        response_json = response.get_json()
+        response_json = self.api.do_get("/interrupts")
 
         num_cpus = response_json['num_cpus']
         num_interrupts_all_cpus = response_json['num_interrupts_all_cpus']
