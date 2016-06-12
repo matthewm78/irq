@@ -56,31 +56,19 @@ ALL_INTERRUPTS_JSON = json.loads('''{
 }''')
 
 INTERRUPT_TOTALS_JSON = json.loads('''{
+    "num_cpus": 2,
     "num_interrupts_all_cpus": 200,
     "num_interrupts_per_cpu": [
         {
-            "cpu_num": "0",
+            "cpu_num": 0,
             "num_interrupts": 50
         },
         {
-            "cpu_num": "1",
+            "cpu_num": 1,
             "num_interrupts": 150
         }
     ]
 }''')
-
-
-class InterruptTotalsTest(unittest.TestCase):
-    def test_get_interrupt_total_for_cpu_list_unordered_by_cpu_num(self):
-        mock_cpu_interrupt_count1 = irqclient.CpuInterruptCount("1", 200)
-        mock_cpu_interrupt_count2 = irqclient.CpuInterruptCount("0", 100)
-        mock_cpu_interrupt_counts = [mock_cpu_interrupt_count1, mock_cpu_interrupt_count2]
-
-        sut = irqclient.InterruptTotals(None, None, None)
-        sut.cpu_interrupt_counts = mock_cpu_interrupt_counts
-
-        self.assertEquals(100, sut.get_interrupts_for_cpu("0"))
-        self.assertEquals(200, sut.get_interrupts_for_cpu("1"))
 
 
 class IrqClientTest(unittest.TestCase):
@@ -96,6 +84,6 @@ class IrqClientTest(unittest.TestCase):
 
         self.assertEquals(200, totals.num_interrupts_all_cpus)
         self.assertEquals(2, totals.num_cpus)
-        self.assertEquals(2, len(totals.cpu_interrupt_counts))
+        self.assertEquals([50, 150], totals.num_interrupts_per_cpu)
 
 
