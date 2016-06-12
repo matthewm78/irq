@@ -30,9 +30,15 @@ class IrqBalancingRecommendationPrinter:
 
 
 class IrqBalancingRecommendationMetrics:
+    ROUND_TO_PLACES = 3
 
     def __init__(self, num_interrupts_per_cpu):
         self.num_interrupts_per_cpu = num_interrupts_per_cpu
+
+        self.total_num_interrupts_all_cpus = sum(self.num_interrupts_per_cpu)
+        self.percentage_interrupts_per_cpu = [
+            round((100.0 * n) / self.total_num_interrupts_all_cpus, self.ROUND_TO_PLACES)
+            for n in self.num_interrupts_per_cpu]
 
 
 class IrqBalancingRecommendation:
