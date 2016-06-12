@@ -1,5 +1,24 @@
 import unittest
 import irqbalance
+from unittest.mock import MagicMock
+
+
+class IrqBalancingRecommendationMetricsExtractorTest(unittest.TestCase):
+
+    def setUp(self):
+        self.metrics = irqbalance.IrqBalancingRecommendationMetricsExtractor()
+
+    def test_get_metrics_total_irqs_per_cpu(self):
+        irq1 = MagicMock()
+        irq1.total_num_interrupts.return_value = 100
+
+        cpu0_irqs = [irq1]
+
+        recommendation = MagicMock()
+        recommendation.get_irqs_for_cpu.return_value = cpu0_irqs
+
+        tmp_metrics = self.metrics.get_metrics(recommendation)
+        self.assertEquals(100, tmp_metrics.num_interrupts_per_cpu(0))
 
 
 class IrqTest(unittest.TestCase):

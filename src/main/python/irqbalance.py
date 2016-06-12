@@ -2,6 +2,14 @@ import re
 import operator
 from prettytable import PrettyTable
 
+class IrqBalancingMetrics:
+    def num_interrupts_per_cpu(self, cpu_num):
+        return 100
+
+class IrqBalancingRecommendationMetricsExtractor:
+    def get_metrics(self, irq_balancing_recommendation):
+        return IrqBalancingMetrics()
+
 class Irq:
     def __init__(self, irq_num, device_name, irq_type, num_interrupts_per_cpu):
         self.irq_num = irq_num
