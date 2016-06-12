@@ -66,7 +66,7 @@ class IrqBalancingRecommendation:
         return round(percentage_interrupts_for_cpu, round_to_places)
 
 
-class IrqBalancer:
+class AlternatingNextMaxIrqBalancer:
 
     def __init__(self, num_cpus):
         self.num_cpus = num_cpus
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     proc_interrupts_parser = ProcInterruptsParser()
     parsed_irqs = proc_interrupts_parser.parse_file(proc_interrupts_file)
 
-    irq_balancer = IrqBalancer(2)
+    irq_balancer = AlternatingNextMaxIrqBalancer(2)
     balance_irqs_out = irq_balancer.balance_irqs(parsed_irqs)
 
     recommendation_printer = IrqBalancingRecommendationPrinter()

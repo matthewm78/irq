@@ -69,10 +69,10 @@ class IrqTest(unittest.TestCase):
         self.assertEqual(1, tmp_irq.total_num_interrupts)
 
 
-class IrqBalancerTest(unittest.TestCase):
+class AlternatingNextMaxIrqBalancerTest(unittest.TestCase):
 
     def setUp(self):
-        self.irq_balancer = irqbalance.IrqBalancer(2)
+        self.irq_balancer = irqbalance.AlternatingNextMaxIrqBalancer(2)
 
     def test_balance_irqs_single_irq(self):
         tmp_irq =  irqbalance.Irq("1", None, None, [100, 100])
