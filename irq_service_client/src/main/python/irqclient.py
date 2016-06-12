@@ -9,11 +9,12 @@ class InterruptTotals:
 
 
 class IrqServiceApi:
-    def __init__(self, host):
+    def __init__(self, host, port=80):
         self.host = host
+        self.port = port
 
     def do_get(self, path):
-        url = "http://{}{}".format(self.host, path)
+        url = "http://{}:{}{}".format(self.host, self.port, path)
         response = requests.get(url)
         return response.json()
 
