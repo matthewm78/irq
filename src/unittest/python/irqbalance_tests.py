@@ -11,8 +11,8 @@ class IrqBalancingRecommendationMetricsTest(unittest.TestCase):
 
     def test_percentage_interrupts_per_cpu(self):
         # Picked values to generate percents that require rounding
-        sut = irqbalance.IrqBalancingRecommendationMetrics([3, 98])
-        self.assertEquals([2.97, 97.03], sut.percentage_interrupts_per_cpu)
+        sut = irqbalance.IrqBalancingRecommendationMetrics([3, 99])
+        self.assertEquals([2.94, 97.06], sut.percentage_interrupts_per_cpu)
 
 
 class IrqBalancingRecommendationTest(unittest.TestCase):

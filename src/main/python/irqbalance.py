@@ -14,6 +14,18 @@ class Irq:
     def total_num_interrupts(self):
         return sum(self.num_interrupts_per_cpu)
 
+class IrqBalancingRecommendationMetricsPrinter:
+
+    def print_metrics(self, recommendation, output_stream):
+        table = PrettyTable(['Cpu #', 'Percent of Interrupts'])
+
+        percentage_interrupts_per_cpu = recommendation.percentage_interrupts_per_cpu
+
+        for i in range(recommendation.num_cpus):
+            table.add_row([i, "{}%".format(percentage_interrupts_per_cpu[i])])
+
+        output_stream.write(table.get_string() + "\n")
+
 
 class IrqBalancingRecommendationPrinter:
 
@@ -30,11 +42,11 @@ class IrqBalancingRecommendationPrinter:
 
 
 class IrqBalancingRecommendationMetrics:
-    ROUND_TO_PLACES = 3
+    ROUND_TO_PLACES = 2
 
     def __init__(self, num_interrupts_per_cpu):
         self.num_interrupts_per_cpu = num_interrupts_per_cpu
-
+        self.num_cpus = len(num_interrupts_per_cpu)
         self.total_num_interrupts_all_cpus = sum(self.num_interrupts_per_cpu)
         self.percentage_interrupts_per_cpu = [
             round((100.0 * n) / self.total_num_interrupts_all_cpus, self.ROUND_TO_PLACES)
@@ -128,3 +140,6 @@ if __name__ == '__main__':
 
     recommendation_printer = IrqBalancingRecommendationPrinter()
     recommendation_printer.print_recommendation(balance_irqs_out, sys.stdout)
+
+    metrics_printer = IrqBalancingRecommendationMetricsPrinter()
+    metrics_printer.print_metrics(balance_irqs_out.get_metrics(), sys.stdout)
