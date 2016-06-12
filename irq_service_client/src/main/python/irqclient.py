@@ -11,6 +11,8 @@ class InterruptTotals:
         self.num_interrupts_all_cpus = num_interrupts_all_cpus
         self.cpu_interrupt_counts = cpu_interrupt_counts
 
+    def get_interrupts_for_cpu(self, cpu_num):
+        return [cic for cic in self.cpu_interrupt_counts if cic.cpu_num == cpu_num][0].num_interrupts
 
 class IrqClient:
 
