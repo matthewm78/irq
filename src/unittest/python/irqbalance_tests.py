@@ -1,27 +1,18 @@
 import unittest
 import irqbalance
-from unittest.mock import MagicMock, patch
-
-
-class IrqBalancingRecommendationMetricsTest(unittest.TestCase):
-
-    def test_total_num_interrupts_all_cpus(self):
-        sut = irqbalance.IrqBalancingRecommendationMetrics([101, 202])
-        self.assertEquals(303, sut.total_num_interrupts_all_cpus)
-
-    def test_percentage_interrupts_per_cpu(self):
-        # Picked values to generate percents that require rounding
-        sut = irqbalance.IrqBalancingRecommendationMetrics([3, 99])
-        self.assertEquals([2.94, 97.06], sut.percentage_interrupts_per_cpu)
+from unittest.mock import MagicMock
 
 
 class IrqBalancingRecommendationTest(unittest.TestCase):
 
+    def get_mock_irq_with_total_num_interrupts(self, total_num_interrupts):
+        mock_irq = MagicMock()
+        mock_irq.total_num_interrupts = total_num_interrupts
+        return mock_irq
+
     def test_get_num_interrupts_for_cpu(self):
-        mock_irq1 = MagicMock()
-        mock_irq1.total_num_interrupts = 101
-        mock_irq2 = MagicMock()
-        mock_irq2.total_num_interrupts = 202
+        mock_irq1 = self.get_mock_irq_with_total_num_interrupts(101)
+        mock_irq2 = self.get_mock_irq_with_total_num_interrupts(202)
         mock_irqs_for_cpu = [mock_irq1, mock_irq2]
 
         # Partial mock SUT
@@ -30,7 +21,7 @@ class IrqBalancingRecommendationTest(unittest.TestCase):
 
         self.assertEquals(303, recommendation.get_num_interrupts_for_cpu(0))
 
-    def test_get_metrics(self):
+    def test_get_total_num_interrupts_all_cpus(self):
         mock_num_interrupts_cpu0 = 101
         mock_num_interrupts_cpu1 = 202
         mock_num_interrupts = [mock_num_interrupts_cpu0, mock_num_interrupts_cpu1]
@@ -39,9 +30,22 @@ class IrqBalancingRecommendationTest(unittest.TestCase):
         recommendation = irqbalance.IrqBalancingRecommendation(len(mock_num_interrupts))
         recommendation.get_num_interrupts_for_cpu = MagicMock(side_effect=mock_num_interrupts)
 
-        with patch('irqbalance.IrqBalancingRecommendationMetrics') as metrics_mock:
-            recommendation.get_metrics()
-            metrics_mock.assert_called_with(mock_num_interrupts)
+        self.assertEquals(303, recommendation.get_total_num_interrupts_all_cpus())
+
+    def test_get_percentage_interrupts_per_cpu(self):
+        # Picked values to generate percents that require rounding
+        mock_num_interrupts_cpu0 = 3
+        mock_num_interrupts_cpu1 = 99
+        mock_num_interrupts = [mock_num_interrupts_cpu0, mock_num_interrupts_cpu1]
+
+        # Partial mock SUT
+        recommendation = irqbalance.IrqBalancingRecommendation(len(mock_num_interrupts))
+        recommendation.get_num_interrupts_for_cpu = MagicMock(side_effect=mock_num_interrupts)
+        recommendation.get_total_num_interrupts_all_cpus = MagicMock(return_value=102)
+
+        round_to_places = 2
+        self.assertEquals(2.94, recommendation.get_percentage_interrupts_for_cpu(0, round_to_places))
+        self.assertEquals(97.06, recommendation.get_percentage_interrupts_for_cpu(1, round_to_places))
 
 
 class IrqTest(unittest.TestCase):
