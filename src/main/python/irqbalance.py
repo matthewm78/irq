@@ -3,18 +3,6 @@ import operator
 from prettytable import PrettyTable
 
 
-class Irq:
-    def __init__(self, irq_num, device_name, irq_type, num_interrupts_per_cpu):
-        self.irq_num = irq_num
-        self.device_name = device_name
-        self.irq_type = irq_type
-        self.num_interrupts_per_cpu = num_interrupts_per_cpu
-
-    @property
-    def total_num_interrupts(self):
-        return sum(self.num_interrupts_per_cpu)
-
-
 class IrqBalancingRecommendationPrinter:
 
     def print_recommendation(self, recommendation, output_stream):
@@ -91,6 +79,7 @@ class AlternatingNextMaxIrqBalancer:
     def sort_irqs_by_total(self, unsorted_irqs):
         return sorted(unsorted_irqs, key=operator.attrgetter('total_num_interrupts'), reverse=False)
 
+
 class ProcInterruptsParser:
 
     def parse_file(self, proc_interrupts_file):
@@ -115,6 +104,19 @@ class ProcInterruptsParser:
         num_interrupts_per_cpu = [num_interrupts_cpu0, num_interrupts_cpu1]
 
         return Irq(irq_num, device_name, irq_type, num_interrupts_per_cpu)
+
+
+class Irq:
+    def __init__(self, irq_num, device_name, irq_type, num_interrupts_per_cpu):
+        self.irq_num = irq_num
+        self.device_name = device_name
+        self.irq_type = irq_type
+        self.num_interrupts_per_cpu = num_interrupts_per_cpu
+
+    @property
+    def total_num_interrupts(self):
+        return sum(self.num_interrupts_per_cpu)
+
 
 if __name__ == '__main__':
     import sys
