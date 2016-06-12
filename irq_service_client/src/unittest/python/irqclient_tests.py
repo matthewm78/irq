@@ -82,6 +82,6 @@ class IrqClientTest(unittest.TestCase):
         totals = sut.get_interrupt_totals()
 
         self.assertEquals(200, totals.num_interrupts_all_cpus)
-        self.assertEquals(2, len(totals.num_interrupts_per_cpu))
-
+        self.assertEquals(2, totals.num_cpus)
+        self.assertEquals(2, len(totals.cpu_interrupt_counts))
 
