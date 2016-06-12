@@ -2,13 +2,6 @@ import re
 import operator
 from prettytable import PrettyTable
 
-class IrqBalancingMetrics:
-    def num_interrupts_per_cpu(self, cpu_num):
-        return 100
-
-class IrqBalancingRecommendationMetricsExtractor:
-    def get_metrics(self, irq_balancing_recommendation):
-        return IrqBalancingMetrics()
 
 class Irq:
     def __init__(self, irq_num, device_name, irq_type, num_interrupts_per_cpu):
@@ -36,6 +29,12 @@ class IrqBalancingRecommendationPrinter:
         output_stream.write(table.get_string() + "\n")
 
 
+class IrqBalancingRecommendationMetrics:
+
+    def __init__(self, num_interrupts_per_cpu):
+        self.num_interrupts_per_cpu = num_interrupts_per_cpu
+
+
 class IrqBalancingRecommendation:
 
     def __init__(self, num_cpus):
@@ -47,6 +46,17 @@ class IrqBalancingRecommendation:
 
     def get_irqs_for_cpu(self, cpu_num):
         return self.irqs_for_cpu[cpu_num]
+
+    def get_num_interrupts_for_cpu(self, cpu_num):
+        irqs_for_cpu_to_sum = self.get_irqs_for_cpu(cpu_num)
+        return sum(i.total_num_interrupts for i in irqs_for_cpu_to_sum)
+
+    def get_metrics(self):
+        num_interrupts_per_cpu = []
+        for i in range(0, self.num_cpus):
+            num_interrupts_per_cpu.append(self.get_num_interrupts_for_cpu(i))
+
+        return IrqBalancingRecommendationMetrics(num_interrupts_per_cpu)
 
 
 class IrqBalancer:

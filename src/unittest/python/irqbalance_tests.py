@@ -1,24 +1,35 @@
 import unittest
 import irqbalance
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 
-class IrqBalancingRecommendationMetricsExtractorTest(unittest.TestCase):
+class IrqBalancingRecommendationTest(unittest.TestCase):
 
-    def setUp(self):
-        self.metrics = irqbalance.IrqBalancingRecommendationMetricsExtractor()
+    def test_get_num_interrupts_for_cpu(self):
+        mock_irq1 = MagicMock()
+        mock_irq1.total_num_interrupts = 101
+        mock_irq2 = MagicMock()
+        mock_irq2.total_num_interrupts = 202
+        mock_irqs_for_cpu = [mock_irq1, mock_irq2]
 
-    def test_get_metrics_total_irqs_per_cpu(self):
-        irq1 = MagicMock()
-        irq1.total_num_interrupts.return_value = 100
+        # Partial mock SUT
+        recommendation = irqbalance.IrqBalancingRecommendation(1)
+        recommendation.get_irqs_for_cpu = MagicMock(return_value=mock_irqs_for_cpu)
 
-        cpu0_irqs = [irq1]
+        self.assertEquals(303, recommendation.get_num_interrupts_for_cpu(0))
 
-        recommendation = MagicMock()
-        recommendation.get_irqs_for_cpu.return_value = cpu0_irqs
+    def test_get_metrics(self):
+        mock_num_interrupts_cpu0 = 101
+        mock_num_interrupts_cpu1 = 202
+        mock_num_interrupts = [mock_num_interrupts_cpu0, mock_num_interrupts_cpu1]
 
-        tmp_metrics = self.metrics.get_metrics(recommendation)
-        self.assertEquals(100, tmp_metrics.num_interrupts_per_cpu(0))
+        # Partial mock SUT
+        recommendation = irqbalance.IrqBalancingRecommendation(len(mock_num_interrupts))
+        recommendation.get_num_interrupts_for_cpu = MagicMock(side_effect=mock_num_interrupts)
+
+        with patch('irqbalance.IrqBalancingRecommendationMetrics') as metrics_mock:
+            recommendation.get_metrics()
+            metrics_mock.assert_called_with(mock_num_interrupts)
 
 
 class IrqTest(unittest.TestCase):
