@@ -72,3 +72,7 @@ class IrqClient:
     def get_interrupt_totals(self):
         response_dict = self.api.do_get("/interrupts/totals")
         return response_dict
+
+    def get_irq_cpu_affinity(self, irq):
+        response_dict = self.api.do_get("/interrupts/{}/cpu_affinity".format(irq))
+        return response_dict

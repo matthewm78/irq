@@ -36,6 +36,14 @@ def main():
     show_interrupts_parser = subparsers.add_parser('show_interrupts')
     show_interrupts_parser.set_defaults(action='show_interrupts')
 
+    show_cpu_affinity_parser = subparsers.add_parser('show_cpu_affinity')
+    show_cpu_affinity_parser.set_defaults(action='show_cpu_affinity')
+    show_cpu_affinity_parser.add_argument('--irq',
+        required=True,
+        metavar='irq',
+        type=str,
+        help='IRQ for which to get current CPU affinity')
+
     args = parser.parse_args()
     action = args.action
 
@@ -46,6 +54,8 @@ def main():
         print_helper.print_interrupt_totals(client.get_interrupt_totals())
     elif action == 'show_interrupts':
         print_helper.print_interrupts(client.get_interrupts())
+    elif action == 'show_cpu_affinity':
+        print(client.get_irq_cpu_affinity(args.irq))
 
 if __name__ == "__main__":
   main()
