@@ -34,12 +34,13 @@ def main():
     show_totals_parser.set_defaults(action='show_totals')
 
     args = parser.parse_args()
+    action = args.action
 
     client = get_irq_client(args.host, args.port)
+    print_helper = irqclient.PrintHelper(sys.stdout)
 
-    action = args.action
     if action == 'show_totals':
-        print(client.get_interrupt_totals())
+        print_helper.print_interrupt_totals(client.get_interrupt_totals())
 
 if __name__ == "__main__":
   main()

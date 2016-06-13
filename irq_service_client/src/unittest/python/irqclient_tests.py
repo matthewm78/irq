@@ -5,18 +5,8 @@ from unittest.mock import MagicMock
 
 
 INTERRUPT_TOTALS_JSON = json.loads('''{
-    "num_cpus": 2,
     "num_interrupts_all_cpus": 200,
-    "num_interrupts_per_cpu": [
-        {
-            "cpu_num": 0,
-            "num_interrupts": 50
-        },
-        {
-            "cpu_num": 1,
-            "num_interrupts": 150
-        }
-    ]
+    "num_interrupts_per_cpu": [50, 150]
 }''')
 
 

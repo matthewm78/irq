@@ -1,4 +1,5 @@
 import requests
+import json
 from prettytable import PrettyTable
 
 class IrqServiceApi:
@@ -12,16 +13,13 @@ class IrqServiceApi:
         return response.json()
 
 
-class IrqClient:
+class PrintHelper:
+    def __init__(self, out_stream):
+        self.out_stream = out_stream
 
-    def __init__(self, api):
-        self.api = api
-
-    def get_interrupt_totals(self):
-        response_json = self.api.do_get("/interrupts/totals")
-
-        num_interrupts_all_cpus = response_json['num_interrupts_all_cpus']
-        num_interrupts_per_cpu = response_json['num_interrupts_per_cpu']
+    def print_interrupt_totals(self, interrupt_totals):
+        num_interrupts_all_cpus = interrupt_totals['num_interrupts_all_cpus']
+        num_interrupts_per_cpu = interrupt_totals['num_interrupts_per_cpu']
 
         table = PrettyTable(["Cpu #", "Total Interrupts"])
         for i in range(0, len(num_interrupts_per_cpu)):
@@ -31,4 +29,14 @@ class IrqClient:
             ])
         table.add_row(["Total:", num_interrupts_all_cpus])
 
-        return table.get_string()
+        self.out_stream.write(table.get_string() + "\n")
+
+
+class IrqClient:
+
+    def __init__(self, api):
+        self.api = api
+
+    def get_interrupt_totals(self):
+        response_dict = self.api.do_get("/interrupts/totals")
+        return response_dict
