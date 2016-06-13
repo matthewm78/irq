@@ -37,3 +37,8 @@ def get_interrupts():
         interrupt_info = irq_service.get_interrupts()
         return jsonify(marshal(interrupt_info, interrupt_info_fields))
 
+
+@app.route('/interrupts/totals', methods=['GET'])
+def get_interrupt_totals():
+        totals = irq_service.get_interrupt_totals()
+        return jsonify(marshal(totals, interrupt_totals_fields))

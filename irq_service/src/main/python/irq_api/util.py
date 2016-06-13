@@ -12,6 +12,12 @@ class IrqService:
         interrupt_info = InterruptInfo(irqs, totals)
         return interrupt_info
 
+    def get_interrupt_totals(self):
+        irqs = self.proc_interrupts_parser.parse_file()
+        totals = self.interrupt_totals_parser.get_totals(irqs)
+        return totals
+
+
 
 class InterruptTotalsParser:
 
