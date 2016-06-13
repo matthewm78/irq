@@ -1,21 +1,23 @@
 import re
-import irq_api.common
+from irq_api.common import Irq
 
 class ProcInterruptsParser:
 
-    def __init__(self, num_cpus):
+    def __init__(self, proc_interrupts_file, num_cpus):
+        self.proc_interrupts_file = proc_interrupts_file
         self.num_cpus = num_cpus
 
-    def parse_file(self, proc_interrupts_file):
+    def parse_file(self):
         parsed_irqs = []
 
-        with open(proc_interrupts_file) as pif:
+        with open(self.proc_interrupts_file) as pif:
             # Discard header
             pif.readline()
 
             for line in pif:
                 parsed_irq = self.parse_line(line)
                 if parsed_irq is not None:
+                    print(parsed_irq)
                     parsed_irqs.append(parsed_irq)
 
         return parsed_irqs
@@ -39,4 +41,4 @@ class ProcInterruptsParser:
             tmp_cpu_interrupts = int(interrupts_line_match.group(2 + cpu_num))
             num_interrupts_per_cpu.append(tmp_cpu_interrupts)
 
-        return irq_api.common.Irq(irq_num, irq_type, device_name, num_interrupts_per_cpu)
+        return Irq(irq_num, irq_type, device_name, num_interrupts_per_cpu)
