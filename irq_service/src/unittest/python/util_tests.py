@@ -1,5 +1,24 @@
 import unittest
-from irq_api.util import ProcInterruptsParser
+from irq_api.common import Irq
+from irq_api.util import InterruptTotalsParser, ProcInterruptsParser
+
+class InterruptTotalsParserTest(unittest.TestCase):
+    def test_get_totals(self):
+        # Total cpu0 -> 3
+        # Total cpu1 -> 6
+        # Total cpu2 -> 9
+        # Total all cpus -> 18
+        mock_irqs = [
+            Irq(None, None, None, [1, 2, 3]),
+            Irq(None, None, None, [1, 2, 3]),
+            Irq(None, None, None, [1, 2, 3])
+        ]
+        sut = InterruptTotalsParser()
+        totals = sut.get_totals(mock_irqs)
+
+        self.assertEquals([3, 6, 9], totals.num_interrupts_per_cpu)
+        self.assertEquals(18, totals.num_interrupts_all_cpus)
+
 
 class ProcInterruptsParserTest(unittest.TestCase):
 
