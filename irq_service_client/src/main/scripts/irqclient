@@ -44,9 +44,21 @@ def main():
         type=str,
         help='IRQ for which to get current CPU affinity')
 
+    set_cpu_affinity_parser = subparsers.add_parser('set_cpu_affinity')
+    set_cpu_affinity_parser.set_defaults(action='set_cpu_affinity')
+    set_cpu_affinity_parser.add_argument('--irq',
+        required=True,
+        metavar='irq',
+        type=str,
+        help='IRQ for which to set it\'s CPU affinity')
+    set_cpu_affinity_parser.add_argument('--affinity-mask',
+        required=True,
+        metavar='affinity_mask',
+        type=str,
+        help='CPU affinity mask to set for IRQ')
     args = parser.parse_args()
     action = args.action
-
+    print(args)
     client = get_irq_client(args.host, args.port)
     print_helper = irqclient.PrintHelper(sys.stdout)
 
@@ -56,6 +68,8 @@ def main():
         print_helper.print_interrupts(client.get_interrupts())
     elif action == 'show_cpu_affinity':
         print_helper.print_cpu_affinity(client.get_irq_cpu_affinity(args.irq))
+    elif action == 'set_cpu_affinity':
+        print_helper.print_cpu_affinity(client.set_irq_cpu_affinity(args.irq, args.affinity_mask))
 
 if __name__ == "__main__":
   main()

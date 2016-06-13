@@ -2,17 +2,6 @@ import requests
 import json
 from prettytable import PrettyTable
 
-class IrqServiceApi:
-    def __init__(self, host, port=80):
-        self.host = host
-        self.port = port
-
-    def do_get(self, path):
-        url = "http://{}:{}{}".format(self.host, self.port, path)
-        response = requests.get(url)
-        return response.json()
-
-
 class PrintHelper:
     def __init__(self, out_stream):
         self.out_stream = out_stream
@@ -66,6 +55,22 @@ class PrintHelper:
         self.out_stream.write(table.get_string() + "\n")
 
 
+class IrqServiceApi:
+    def __init__(self, host, port=80):
+        self.host = host
+        self.port = port
+
+    def do_get(self, path):
+        url = "http://{}:{}{}".format(self.host, self.port, path)
+        response = requests.get(url)
+        return response.json()
+
+    def do_put(self, path, data):
+        url = "http://{}:{}{}".format(self.host, self.port, path)
+        response = requests.put(url, data=data)
+        return response.json()
+
+
 class IrqClient:
 
     def __init__(self, api):
@@ -82,3 +87,9 @@ class IrqClient:
     def get_irq_cpu_affinity(self, irq):
         response_dict = self.api.do_get("/interrupts/{}/cpu_affinity".format(irq))
         return response_dict
+
+    def set_irq_cpu_affinity(self, irq, cpu_affinity_mask):
+        path = "/interrupts/{}/cpu_affinity".format(irq)
+        put_data = { 'cpu_affinity_mask': cpu_affinity_mask }
+        response = self.api.do_put(path, put_data)
+        return response
