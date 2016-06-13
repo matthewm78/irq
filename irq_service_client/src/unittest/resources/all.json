@@ -1,0 +1,51 @@
+{
+    "totals": {
+        "num_interrupts_all_cpus": 200,
+        "num_interrupts_per_cpu": [
+            {
+                "cpu_num": "0",
+                "num_interrupts": 50
+            },
+            {
+                "cpu_num": "1",
+                "num_interrupts": 150
+            }
+        ]
+    },
+    "interrupts": [
+        {
+            "irq": "100",
+            "device": "eth0-TxRx-0",
+            "interrupt_type": "IR-PCI-MSI-edge",
+            "num_interrupts_all_cpus": 55,
+            "num_interrupts_per_cpu": [
+                {
+                    "cpu_num": 0,
+                    "num_interrupts": 5
+                },
+                {
+                    "cpu_num": 1,
+                    "num_interrupts": 50
+                }
+
+            ]
+        },
+        {
+            "irq": "101",
+            "device": "eth1-TxRx-0",
+            "interrupt_type": "IR-PCI-MSI-edge",
+            "num_interrupts_all_cpus": 145,
+            "num_interrupts_per_cpu": [
+                {
+                    "cpu_num": 0,
+                    "num_interrupts": 45
+                },
+                {
+                    "cpu_num": 1,
+                    "num_interrupts": 100
+                }
+
+            ]
+        }
+    ]
+}
