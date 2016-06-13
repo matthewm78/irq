@@ -1,12 +1,5 @@
 import requests
-
-
-class InterruptTotals:
-    def __init__(self, num_cpus, num_interrupts_all_cpus, num_interrupts_per_cpu):
-        self.num_cpus = num_cpus
-        self.num_interrupts_all_cpus = num_interrupts_all_cpus
-        self.num_interrupts_per_cpu = num_interrupts_per_cpu
-
+from prettytable import PrettyTable
 
 class IrqServiceApi:
     def __init__(self, host, port=80):
@@ -27,16 +20,15 @@ class IrqClient:
     def get_interrupt_totals(self):
         response_json = self.api.do_get("/interrupts/totals")
 
-        num_cpus = response_json['num_cpus']
         num_interrupts_all_cpus = response_json['num_interrupts_all_cpus']
+        num_interrupts_per_cpu = response_json['num_interrupts_per_cpu']
 
-        num_interrupts_per_cpu = []
-        per_cpu_json = response_json['num_interrupts_per_cpu']
-        for cpu_num in range(0, num_cpus):
-            cpu_interrupts = [x for x in per_cpu_json if x['cpu_num'] == cpu_num][0]
-            num_interrupts_per_cpu.append(cpu_interrupts['num_interrupts'])
+        table = PrettyTable(["Cpu #", "Total Interrupts"])
+        for i in range(0, len(num_interrupts_per_cpu)):
+            table.add_row([
+                "CPU{}".format(i),
+                num_interrupts_per_cpu[i]
+            ])
+        table.add_row(["Total:", num_interrupts_all_cpus])
 
-        return InterruptTotals(
-            num_cpus,
-            num_interrupts_all_cpus,
-            num_interrupts_per_cpu)
+        return table.get_string()

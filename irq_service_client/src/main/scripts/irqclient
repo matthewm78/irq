@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import irqclient
+import argparse
 import sys
 
 def get_irq_client(host, port):
@@ -10,10 +11,35 @@ def get_irq_client(host, port):
 
 
 def main():
-    service_host = sys.argv[1]
-    service_port = sys.argv[2]
-    client = get_irq_client(service_host, service_port)
-    client.get_interrupt_totals()
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--host',
+        required=True,
+        metavar='host',
+        type=str,
+        nargs='?',
+        default='localhost',
+        help='host of API web service')
+    parser.add_argument('--port',
+        required=True,
+        metavar='port',
+        type=str,
+        nargs='?',
+        default='5000',
+        help='port of API web service')
+
+    subparsers = parser.add_subparsers(title='commands')
+
+    show_totals_parser = subparsers.add_parser('show_totals')
+    show_totals_parser.set_defaults(action='show_totals')
+
+    args = parser.parse_args()
+
+    client = get_irq_client(args.host, args.port)
+
+    action = args.action
+    if action == 'show_totals':
+        print(client.get_interrupt_totals())
 
 if __name__ == "__main__":
   main()
