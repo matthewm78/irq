@@ -1,6 +1,4 @@
-import re
-
-class Interrupts:
+class InterruptInfo:
     def __init__(self, irqs):
         self.irqs = irqs
 

@@ -17,7 +17,6 @@ class ProcInterruptsParser:
             for line in pif:
                 parsed_irq = self.parse_line(line)
                 if parsed_irq is not None:
-                    print(parsed_irq)
                     parsed_irqs.append(parsed_irq)
 
         return parsed_irqs
