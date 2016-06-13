@@ -3,3 +3,4 @@ prettytable
 requests
 httmock
 flask
+flask-restful
