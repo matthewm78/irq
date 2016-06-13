@@ -3,6 +3,14 @@ from irq_api.util import ProcInterruptsParser
 
 class ProcInterruptsParserTest(unittest.TestCase):
 
+    def test_parse_line_with_non_numerical_irq_num_should_return_none(self):
+        line = "NMI:  10  irq-type  device-name"
+
+        sut = ProcInterruptsParser(1)
+        tmp_irq = sut.parse_line(line)
+
+        self.assertEquals(None, tmp_irq)
+
     def test_parse_line_multiple_cpus(self):
         multi_cpu_line = "100:  10  20  30  irq-type  device-name"
 

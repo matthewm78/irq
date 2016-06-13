@@ -10,9 +10,13 @@ class ProcInterruptsParser:
         parsed_irqs = []
 
         with open(proc_interrupts_file) as pif:
+            # Discard header
+            pif.readline()
+
             for line in pif:
                 parsed_irq = self.parse_line(line)
-                parsed_irqs.append(parsed_irq)
+                if parsed_irq is not None:
+                    parsed_irqs.append(parsed_irq)
 
         return parsed_irqs
 
@@ -22,6 +26,9 @@ class ProcInterruptsParser:
 
         interrupts_line_compiled = re.compile(interrupts_line_regex)
         interrupts_line_match = interrupts_line_compiled.search(interrupts_line)
+
+        if interrupts_line_match is None:
+            return None
 
         irq_num = interrupts_line_match.group(1)
         irq_type = interrupts_line_match.group(2 + self.num_cpus)
