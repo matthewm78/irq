@@ -1,4 +1,4 @@
-from irq_api.util import SmpAffinityParser, InterruptTotalsParser, IrqService, ProcInterruptsParser
+from irq_api.util import SmpAffinityUtil, InterruptTotalsParser, IrqService, ProcInterruptsParser
 
 import multiprocessing
 from flask import Flask, jsonify, request
@@ -34,7 +34,7 @@ NUM_CPUS = multiprocessing.cpu_count()
 
 proc_interrupts_parser = ProcInterruptsParser(PROC_INTERRUPTS_FILE, NUM_CPUS)
 interrupt_totals_parser = InterruptTotalsParser()
-smp_affinity_parser = SmpAffinityParser('/proc/irq/{}/smp_affinity')
+smp_affinity_parser = SmpAffinityUtil('/proc/irq/{}/smp_affinity')
 interrupt_totals_parser = InterruptTotalsParser()
 
 irq_service = IrqService(proc_interrupts_parser, interrupt_totals_parser, smp_affinity_parser)
@@ -43,7 +43,6 @@ irq_service = IrqService(proc_interrupts_parser, interrupt_totals_parser, smp_af
 def get_interrupts():
         interrupt_info = irq_service.get_interrupts()
         return jsonify(marshal(interrupt_info, interrupt_info_fields))
-
 
 @app.route('/interrupts/totals', methods=['GET'])
 def get_interrupt_totals():

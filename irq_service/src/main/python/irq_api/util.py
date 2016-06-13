@@ -2,10 +2,10 @@ import re
 from irq_api.common import CpuAffinityInfo, InterruptInfo, InterruptTotals, Irq
 
 class IrqService:
-    def __init__(self, proc_interrupts_parser, interrupt_totals_parser, smp_affinity_parser):
+    def __init__(self, proc_interrupts_parser, interrupt_totals_parser, smp_affinity_util):
         self.proc_interrupts_parser = proc_interrupts_parser
         self.interrupt_totals_parser = interrupt_totals_parser
-        self.smp_affinity_parser = smp_affinity_parser
+        self.smp_affinity_util = smp_affinity_util
 
     def get_interrupts(self):
         irqs = self.proc_interrupts_parser.parse_file()
@@ -19,7 +19,11 @@ class IrqService:
         return totals
 
     def get_irq_cpu_affinity(self, irq):
-        smp_affinity = self.smp_affinity_parser.get_irq_smp_affinity(irq)
+        smp_affinity = self.smp_affinity_util.get_irq_smp_affinity(irq)
+        return CpuAffinityInfo(irq, smp_affinity)
+
+    def set_irq_cpu_affinity(self, irq, cpu_affinity_mask):
+        smp_affinity = self.smp_affinity_util.set_irq_smp_affinity(irq, cpu_affinity_mask)
         return CpuAffinityInfo(irq, smp_affinity)
 
 
@@ -38,7 +42,7 @@ class InterruptTotalsParser:
         return InterruptTotals(total_num_interrupts_all_cpus, total_num_interrupts_per_cpu)
 
 
-class SmpAffinityParser:
+class SmpAffinityUtil:
     def __init__(self, smp_affinity_file_pattern):
         self.smp_affinity_file_pattern = smp_affinity_file_pattern
 
@@ -46,9 +50,13 @@ class SmpAffinityParser:
         smp_affinity_file = self.smp_affinity_file_pattern.format(irq)
         with open(smp_affinity_file, 'r') as saf:
             smp_affinity = saf.readline().strip()
-
         return smp_affinity
 
+    def set_irq_smp_affinity(self, irq, smp_affinity_mask):
+        smp_affinity_file = self.smp_affinity_file_pattern.format(irq)
+        with open(smp_affinity_file, "w") as saf:
+            saf.write(smp_affinity_mask + "\n")
+        return self.get_irq_smp_affinity(irq)
 
 class ProcInterruptsParser:
 
