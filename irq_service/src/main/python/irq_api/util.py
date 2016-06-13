@@ -1,14 +1,21 @@
 import re
-from irq_api.common import Irq, InterruptInfo
+from irq_api.common import InterruptInfo, InterruptTotals, Irq
 
 class IrqService:
-    def __init__(self, parser):
-        self.parser = parser
+    def __init__(self, proc_interrupts_parser, interrupt_totals_parser):
+        self.proc_interrupts_parser = proc_interrupts_parser
+        self.interrupt_totals_parser = interrupt_totals_parser
 
     def get_interrupts(self):
-        irqs = self.parser.parse_file()
-        interrupt_info = InterruptInfo(irqs)
+        irqs = self.proc_interrupts_parser.parse_file()
+        totals = self.interrupt_totals_parser.get_totals(irqs)
+        interrupt_info = InterruptInfo(irqs, totals)
         return interrupt_info
+
+
+class InterruptTotalsParser:
+    def get_totals(self, irqs):
+        return InterruptTotals(1, [100, 200])
 
 
 class ProcInterruptsParser:

@@ -1,4 +1,4 @@
-from irq_api.util import IrqService, ProcInterruptsParser
+from irq_api.util import InterruptTotalsParser, IrqService, ProcInterruptsParser
 
 import multiprocessing
 from flask import Flask, jsonify
@@ -14,7 +14,13 @@ irq_fields = {
     'num_interrupts_per_cpu': fields.List(fields.Integer)
 }
 
+interrupt_totals_fields = {
+    'num_interrupts_all_cpus': fields.Integer,
+    'num_interrupts_per_cpu': fields.List(fields.Integer)
+}
+
 interrupt_info_fields = {
+    'totals': fields.Nested(interrupt_totals_fields),
     'interrupts': fields.List(fields.Nested(irq_fields), attribute='irqs')
 }
 
@@ -22,7 +28,9 @@ PROC_INTERRUPTS_FILE = '/proc/interrupts'
 NUM_CPUS = multiprocessing.cpu_count()
 
 proc_interrupts_parser = ProcInterruptsParser(PROC_INTERRUPTS_FILE, NUM_CPUS)
-irq_service = IrqService(proc_interrupts_parser)
+interrupt_totals_parser = InterruptTotalsParser()
+
+irq_service = IrqService(proc_interrupts_parser, interrupt_totals_parser)
 
 @app.route('/interrupts', methods=['GET'])
 def get_interrupts():
