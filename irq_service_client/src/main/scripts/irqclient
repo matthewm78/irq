@@ -33,6 +33,9 @@ def main():
     show_totals_parser = subparsers.add_parser('show_totals')
     show_totals_parser.set_defaults(action='show_totals')
 
+    show_interrupts_parser = subparsers.add_parser('show_interrupts')
+    show_interrupts_parser.set_defaults(action='show_interrupts')
+
     args = parser.parse_args()
     action = args.action
 
@@ -41,6 +44,8 @@ def main():
 
     if action == 'show_totals':
         print_helper.print_interrupt_totals(client.get_interrupt_totals())
+    elif action == 'show_interrupts':
+        print_helper.print_interrupts(client.get_interrupts())
 
 if __name__ == "__main__":
   main()
