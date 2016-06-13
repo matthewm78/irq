@@ -1,7 +1,7 @@
 from irq_api.util import SmpAffinityParser, InterruptTotalsParser, IrqService, ProcInterruptsParser
 
 import multiprocessing
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask.ext.restful import Api, fields, marshal
 
 app = Flask(__name__, static_url_path="")
@@ -53,4 +53,10 @@ def get_interrupt_totals():
 @app.route('/interrupts/<string:irq>/cpu_affinity', methods=['GET'])
 def get_irq_cpu_affinity(irq):
         response = irq_service.get_irq_cpu_affinity(irq)
+        return jsonify(marshal(response, irq_cpu_affinity_fields))
+
+@app.route('/interrupts/<string:irq>/cpu_affinity', methods=['PUT'])
+def set_irq_cpu_affinity(irq):
+        cpu_affinity_mask = request.form['cpu_affinity_mask']
+        response = irq_service.set_irq_cpu_affinity(irq, cpu_affinity_mask)
         return jsonify(marshal(response, irq_cpu_affinity_fields))
