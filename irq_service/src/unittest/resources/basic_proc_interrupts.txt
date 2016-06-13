@@ -1,0 +1,2 @@
+100:  1  1  IR-PCI-MSI-edge  eth0-irq-100
+101:  2  2  IR-PCI-MSI-edge  eth0-irq-101

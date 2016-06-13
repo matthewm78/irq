@@ -1,4 +1,4 @@
 #!/bin/bash
 
-export FLASK_APP=irqservice
+export FLASK_APP=irq_api.irqservice
 flask run
