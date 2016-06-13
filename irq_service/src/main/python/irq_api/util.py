@@ -20,7 +20,7 @@ class IrqService:
 
     def get_irq_cpu_affinity(self, irq):
         smp_affinity = self.smp_affinity_parser.get_irq_smp_affinity(irq)
-        return CpuAffinityInfo(smp_affinity)
+        return CpuAffinityInfo(irq, smp_affinity)
 
 
 class InterruptTotalsParser:
@@ -48,6 +48,7 @@ class SmpAffinityParser:
             smp_affinity = saf.readline().strip()
 
         return smp_affinity
+
 
 class ProcInterruptsParser:
 

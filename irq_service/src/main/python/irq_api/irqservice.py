@@ -25,6 +25,7 @@ interrupt_info_fields = {
 }
 
 irq_cpu_affinity_fields = {
+    'irq_num': fields.String,
     'cpu_affinity': fields.String
 }
 

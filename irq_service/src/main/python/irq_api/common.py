@@ -5,7 +5,8 @@ class InterruptInfo:
 
 
 class CpuAffinityInfo:
-    def __init__(self, cpu_affinity):
+    def __init__(self, irq_num, cpu_affinity):
+        self.irq_num = irq_num
         self.cpu_affinity = cpu_affinity
 
 
