@@ -55,7 +55,7 @@ def main():
     elif action == 'show_interrupts':
         print_helper.print_interrupts(client.get_interrupts())
     elif action == 'show_cpu_affinity':
-        print(client.get_irq_cpu_affinity(args.irq))
+        print_helper.print_cpu_affinity(client.get_irq_cpu_affinity(args.irq))
 
 if __name__ == "__main__":
   main()

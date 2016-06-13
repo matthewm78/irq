@@ -17,6 +17,12 @@ class PrintHelper:
     def __init__(self, out_stream):
         self.out_stream = out_stream
 
+    def print_cpu_affinity(self, cpu_affinity):
+        table = PrettyTable(["IRQ", "CPU Affinity"])
+        table.add_row([cpu_affinity['irq_num'], cpu_affinity['cpu_affinity']])
+
+        self.out_stream.write(table.get_string() + "\n")
+
     def print_interrupts(self, interrupts):
         num_interrupts_all_cpus = interrupts['totals']['num_interrupts_all_cpus']
         num_interrupts_per_cpu = interrupts['totals']['num_interrupts_per_cpu']
