@@ -1,5 +1,4 @@
-from irq_api.util import ProcInterruptsParser
-from irq_api.common import InterruptInfo
+from irq_api.util import IrqService, ProcInterruptsParser
 
 import multiprocessing
 from flask import Flask, jsonify
@@ -23,10 +22,10 @@ PROC_INTERRUPTS_FILE = '/proc/interrupts'
 NUM_CPUS = multiprocessing.cpu_count()
 
 proc_interrupts_parser = ProcInterruptsParser(PROC_INTERRUPTS_FILE, NUM_CPUS)
+irq_service = IrqService(proc_interrupts_parser)
 
 @app.route('/interrupts', methods=['GET'])
 def get_interrupts():
-        irqs = proc_interrupts_parser.parse_file()
-        interrupt_info = InterruptInfo(irqs)
+        interrupt_info = irq_service.get_interrupts()
         return jsonify(marshal(interrupt_info, interrupt_info_fields))
 

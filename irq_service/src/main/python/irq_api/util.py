@@ -1,5 +1,15 @@
 import re
-from irq_api.common import Irq
+from irq_api.common import Irq, InterruptInfo
+
+class IrqService:
+    def __init__(self, parser):
+        self.parser = parser
+
+    def get_interrupts(self):
+        irqs = self.parser.parse_file()
+        interrupt_info = InterruptInfo(irqs)
+        return interrupt_info
+
 
 class ProcInterruptsParser:
 
