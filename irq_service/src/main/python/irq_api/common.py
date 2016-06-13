@@ -4,6 +4,11 @@ class InterruptInfo:
         self.totals = totals
 
 
+class CpuAffinityInfo:
+    def __init__(self, cpu_affinity):
+        self.cpu_affinity = cpu_affinity
+
+
 class InterruptTotals:
     def __init__(self, num_interrupts_all_cpus, num_interrupts_per_cpu):
         self.num_interrupts_all_cpus = num_interrupts_all_cpus
