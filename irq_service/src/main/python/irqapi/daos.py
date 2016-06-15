@@ -1,22 +1,14 @@
-from irqapi.models import Irq
+from irqapi.models import Irq, InterruptTotalsForPeriod
 import re
 
-class SmpAffinityDao:
+class InterruptTsdbDao:
 
-    def __init__(self, smp_affinity_file_pattern):
-        self.smp_affinity_file_pattern = smp_affinity_file_pattern
+    def __init__(self, interrupt_tsdb_file, num_cpus):
+        self.interrupt_tsdb_file = interrupt_tsdb_file
+        self.num_cpus = num_cpus
 
-    def get_irq_smp_affinity(self, irq):
-        smp_affinity_file = self.smp_affinity_file_pattern.format(irq)
-        with open(smp_affinity_file, 'r') as saf:
-            smp_affinity = saf.readline().strip()
-        return smp_affinity
-
-    def set_irq_smp_affinity(self, irq, smp_affinity_mask):
-        smp_affinity_file = self.smp_affinity_file_pattern.format(irq)
-        with open(smp_affinity_file, "w") as saf:
-            saf.write(smp_affinity_mask + "\n")
-        return self.get_irq_smp_affinity(irq)
+    def get_interrupts_for_period(self):
+        return InterruptTotalsForPeriod([1,2], 132, self.num_cpus)
 
 
 class ProcInterruptsDao:
@@ -59,3 +51,22 @@ class ProcInterruptsDao:
             num_interrupts_per_cpu.append(tmp_cpu_interrupts)
 
         return Irq(irq_num, irq_type, device_name, num_interrupts_per_cpu)
+
+
+class SmpAffinityDao:
+
+    def __init__(self, smp_affinity_file_pattern):
+        self.smp_affinity_file_pattern = smp_affinity_file_pattern
+
+    def get_irq_smp_affinity(self, irq):
+        smp_affinity_file = self.smp_affinity_file_pattern.format(irq)
+        with open(smp_affinity_file, 'r') as saf:
+            smp_affinity = saf.readline().strip()
+        return smp_affinity
+
+    def set_irq_smp_affinity(self, irq, smp_affinity_mask):
+        smp_affinity_file = self.smp_affinity_file_pattern.format(irq)
+        with open(smp_affinity_file, "w") as saf:
+            saf.write(smp_affinity_mask + "\n")
+        return self.get_irq_smp_affinity(irq)
+

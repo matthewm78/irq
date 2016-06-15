@@ -1,5 +1,14 @@
 from irqapi.models import CpuAffinityInfo, IrqInfo, InterruptTotals
 
+class InterruptService:
+
+    def __init__(self, interrupt_tsdb_dao):
+        self.interrupt_tsdb_dao = interrupt_tsdb_dao
+
+    def get_interrupts_for_period(self, period_duration_seconds):
+        return self.interrupt_tsdb_dao.get_interrupts_for_period()
+
+
 class IrqService:
 
     def __init__(self, proc_interrupts_parser, interrupt_totals_parser, smp_affinity_util):
