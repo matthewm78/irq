@@ -10,8 +10,14 @@ class InterruptTsdbDao:
 
     def get_interrupts_for_period(self, period_duration_seconds):
         now = time.time()
-        start_time = now - period_duration_seconds
-        print("Start -> {}".format(start_time))
+        start_time_unix = now - period_duration_seconds
+        start_line_parts, end_line_parts = self._find_start_end_tsdb_lines(start_time_unix)
+        print("Start line parts -> {}".format(start_line_parts))
+        print("End line parts -> {}".format(end_line_parts))
+
+        return InterruptTotalsForPeriod([1,2], period_duration_seconds, self.num_cpus)
+
+    def _find_start_end_tsdb_lines(self, start_time_unix):
         start_line_parts = []
         end_line_parts = []
         with open(self.interrupt_tsdb_file, 'r') as itf:
@@ -19,15 +25,16 @@ class InterruptTsdbDao:
             for line in itf.readlines():
                 line_parts = line.split(',')
                 line_timestamp = float(line_parts[0])
+
                 print("Timestamp -> {}".format(line_timestamp))
-                if not match_found and line_timestamp >= start_time:
+
+                if not match_found and line_timestamp >= start_time_unix:
                     start_line_parts = line_parts
                     match_found = True
                     print("Match -> {}".format(line))
             end_line_parts = line_parts
-        print("Start line parts -> {}".format(start_line_parts))
-        print("End line parts -> {}".format(end_line_parts))
-        return InterruptTotalsForPeriod([1,2], period_duration_seconds, self.num_cpus)
+
+        return start_line_parts, end_line_parts
 
 
 class ProcInterruptsDao:
