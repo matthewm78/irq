@@ -22,22 +22,23 @@ class PrintHelper:
         for i in range(0, num_cpus):
             cpu_columns.append("CPU{}".format(i))
 
-        columns = ["IRQ"]  + ["Irq Type", "Device"] + cpu_columns
+        columns = ["IRQ"]  + ["Irq Type", "Device", "CPU Affinity"] + cpu_columns
         table = PrettyTable(columns)
         for irq in irqs:
             columns = []
             columns.append(irq['irq_num'])
             columns.append(irq['device_name'])
             columns.append(irq['irq_type'])
+            columns.append(irq['cpu_affinity'])
             columns += irq['num_interrupts_per_cpu']
             table.add_row(columns)
 
         totals_columns = ["Totals:"]
-        totals_columns += ["", ""]
+        totals_columns += ["", "", ""]
         totals_columns += num_interrupts_per_cpu
         table.add_row(totals_columns)
 
-        self.out_stream.write(table.get_string(sortby="IRQ") + "\n")
+        self.out_stream.write(table.get_string() + "\n")
 
     def print_interrupt_totals(self, interrupt_totals):
         num_interrupts_all_cpus = interrupt_totals['num_interrupts_all_cpus']
