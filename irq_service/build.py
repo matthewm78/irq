@@ -6,10 +6,13 @@ use_plugin("python.install_dependencies")
 use_plugin("python.distutils")
 
 
-name = "irq_service"
+name = "irqapi"
 default_task = "publish"
 
 
 @init
 def set_properties(project):
-    pass
+    project.depends_on("flask==0.11.1")
+    project.depends_on("flask-restful==0.3.5")
+
+    project.set_property('distutils_console_scripts', ['irqservice=irqapi.main:run'])
