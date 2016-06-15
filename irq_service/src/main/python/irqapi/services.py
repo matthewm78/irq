@@ -19,6 +19,11 @@ class IrqService:
         irq_info = IrqInfo(irqs, totals)
         return irq_info
 
+    def get_interrupt_totals(self):
+        irqs = self.proc_interrupts_parser.parse_file()
+        totals = self.interrupt_totals_parser.get_totals(irqs)
+        return totals
+
     def get_irq_cpu_affinity(self, irq):
         smp_affinity = self.smp_affinity_util.get_irq_smp_affinity(irq)
         return CpuAffinityInfo(irq, smp_affinity)
