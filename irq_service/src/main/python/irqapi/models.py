@@ -7,6 +7,7 @@ irq_fields = {
     'irq_num': fields.String,
     'irq_type': fields.String,
     'device_name': fields.String,
+    'cpu_affinity': fields.String,
     'num_interrupts_per_cpu': fields.List(fields.Integer)
 }
 
@@ -52,3 +53,4 @@ class Irq:
         self.irq_type = irq_type
         self.device_name = device_name
         self.num_interrupts_per_cpu = num_interrupts_per_cpu
+        self.cpu_affinity = None
