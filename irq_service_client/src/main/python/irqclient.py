@@ -59,6 +59,20 @@ class PrintHelper:
 
         self.out_stream.write(table.get_string() + "\n")
 
+    def print_interrupts_for_cpu(self, interrupt_totals):
+        cpu_num = interrupt_totals['cpu_num']
+        period_duration_seconds = interrupt_totals['period_duration_seconds']
+        num_interrupts = interrupt_totals['num_interrupts']
+        percent_interrupts = interrupt_totals['percent_interrupts']
+        num_interrupts_all_cpus = interrupt_totals['num_interrupts_all_cpus']
+
+        table = PrettyTable(["CPU #", cpu_num])
+        table.add_row(["# Interrupts", num_interrupts])
+        table.add_row(["% Interrupts", "{}%".format(round(percent_interrupts, 1))])
+        table.add_row(["# Interrupts All CPUs", num_interrupts_all_cpus])
+        table.add_row(["Period Duration (secs)", period_duration_seconds])
+
+        self.out_stream.write(table.get_string() + "\n")
 
 class IrqServiceApi:
     def __init__(self, host, port=80):
@@ -84,6 +98,11 @@ class IrqClient:
     def get_interrupts_for_period(self, period_duration_seconds):
         response_dict = self.api.do_get(
             "/interrupts?period_seconds={}".format(period_duration_seconds))
+        return response_dict
+
+    def get_interrupts_for_period_for_cpu(self, cpu_num, period_duration_seconds):
+        response_dict = self.api.do_get(
+            "/interrupts/cpu/{}?period_seconds={}".format(cpu_num, period_duration_seconds))
         return response_dict
 
     def get_irq_info(self):

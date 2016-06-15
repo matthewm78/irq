@@ -41,6 +41,11 @@ def main():
         metavar='seconds',
         type=str,
         help='length of period in seconds over which to count interrupt totals')
+    show_interrupts_parser.add_argument('--cpu',
+        required=False,
+        metavar='cpu_num',
+        type=str,
+        help='CPU number to get interrupt totals for')
 
     show_cpu_affinity_parser = subparsers.add_parser('show_cpu_affinity')
     show_cpu_affinity_parser.set_defaults(action='show_cpu_affinity')
@@ -66,13 +71,18 @@ def main():
     args = parser.parse_args()
     action = args.action
 
+    print(args)
+
     client = get_irq_client(args.host, args.port)
     print_helper = irqclient.PrintHelper(sys.stdout)
 
     if action == 'show_irq_info':
         print_helper.print_irq_info(client.get_irq_info())
     elif action == 'show_interrupts':
-        print_helper.print_interrupts(client.get_interrupts_for_period(args.duration))
+        if args.cpu is None:
+            print_helper.print_interrupts(client.get_interrupts_for_period(args.duration))
+        else:
+            print_helper.print_interrupts_for_cpu(client.get_interrupts_for_period_for_cpu(args.cpu, args.duration))
     elif action == 'show_cpu_affinity':
         print_helper.print_cpu_affinity(client.get_irq_cpu_affinity(args.irq))
     elif action == 'set_cpu_affinity':
