@@ -1,5 +1,5 @@
 #!/bin/bash
 
-export FLASK_APP=irq_api.irqservice
+export FLASK_APP=irqapi.main
 export FLASK_DEBUG=1
 flask run
