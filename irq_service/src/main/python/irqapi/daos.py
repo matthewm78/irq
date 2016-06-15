@@ -25,6 +25,7 @@ class InterruptTsdbDao:
         totals_for_period = self.get_interrupts_for_period(period_duration_seconds)
 
         return InterruptTotalsForPeriodForCpu(
+            cpu_num,
             totals_for_period.num_interrupts_per_cpu[cpu_num],
             totals_for_period.percent_interrupts_per_cpu[cpu_num],
             period_duration_seconds,
