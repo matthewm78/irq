@@ -18,6 +18,8 @@ interrupt_totals_fields = {
 
 interrupt_totals_for_period_fields = {
     'num_interrupts_per_cpu': fields.List(fields.Integer),
+    'percent_interrupts_per_cpu': fields.List(fields.Float),
+    'num_interrupts_all_cpus': fields.Integer,
     'period_duration_seconds': fields.Integer,
     'num_cpus': fields.Integer
 }
@@ -50,6 +52,9 @@ class InterruptTotalsForPeriod:
         self.num_interrupts_per_cpu = num_interrupts_per_cpu
         self.period_duration_seconds = period_duration_seconds
         self.num_cpus = num_cpus
+
+        self.num_interrupts_all_cpus = sum(num_interrupts_per_cpu)
+        self.percent_interrupts_per_cpu = [100.0*(cpu/self.num_interrupts_all_cpus) for cpu in num_interrupts_per_cpu]
 
 class Irq:
     def __init__(self, irq_num, irq_type, device_name, num_interrupts_per_cpu):
