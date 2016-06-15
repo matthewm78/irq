@@ -1,5 +1,6 @@
 from irqapi.models import Irq, InterruptTotalsForPeriod
 import re
+import time
 
 class InterruptTsdbDao:
 
@@ -7,8 +8,26 @@ class InterruptTsdbDao:
         self.interrupt_tsdb_file = interrupt_tsdb_file
         self.num_cpus = num_cpus
 
-    def get_interrupts_for_period(self):
-        return InterruptTotalsForPeriod([1,2], 132, self.num_cpus)
+    def get_interrupts_for_period(self, period_duration_seconds):
+        now = time.time()
+        start_time = now - period_duration_seconds
+        print("Start -> {}".format(start_time))
+        start_line_parts = []
+        end_line_parts = []
+        with open(self.interrupt_tsdb_file, 'r') as itf:
+            match_found = False
+            for line in itf.readlines():
+                line_parts = line.split(',')
+                line_timestamp = float(line_parts[0])
+                print("Timestamp -> {}".format(line_timestamp))
+                if not match_found and line_timestamp >= start_time:
+                    start_line_parts = line_parts
+                    match_found = True
+                    print("Match -> {}".format(line))
+            end_line_parts = line_parts
+        print("Start line parts -> {}".format(start_line_parts))
+        print("End line parts -> {}".format(end_line_parts))
+        return InterruptTotalsForPeriod([1,2], period_duration_seconds, self.num_cpus)
 
 
 class ProcInterruptsDao:

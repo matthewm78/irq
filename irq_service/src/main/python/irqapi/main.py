@@ -38,7 +38,7 @@ interrupt_service = InterruptService(interrupt_tsdb_dao)
 #------------------------------------------------------------------------------
 @app.route('/interrupts', methods=['GET'])
 def get_interrupts_for_period():
-    interrupts_for_period = interrupt_service.get_interrupts_for_period(None)
+    interrupts_for_period = interrupt_service.get_interrupts_for_period(30)
     return jsonify(marshal(interrupts_for_period, interrupt_totals_for_period_fields))
 
 @app.route('/irqs', methods=['GET'])
@@ -72,5 +72,5 @@ def run():
         INTERRUPT_TSDB_SAMPLING_INTERVAL_SECONDS)
 
     tsdb_thread.start()
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=True)
     tsdb_thread.join()

@@ -6,7 +6,7 @@ class InterruptService:
         self.interrupt_tsdb_dao = interrupt_tsdb_dao
 
     def get_interrupts_for_period(self, period_duration_seconds):
-        return self.interrupt_tsdb_dao.get_interrupts_for_period()
+        return self.interrupt_tsdb_dao.get_interrupts_for_period(period_duration_seconds)
 
 
 class IrqService:
