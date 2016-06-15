@@ -8,6 +8,11 @@ class InterruptService:
     def get_interrupts_for_period(self, period_duration_seconds):
         return self.interrupt_tsdb_dao.get_interrupts_for_period(period_duration_seconds)
 
+    def get_interrupts_for_period_for_cpu(self, cpu_num, period_duration_seconds):
+        return self.interrupt_tsdb_dao.get_interrupts_for_period_for_cpu(
+            cpu_num,
+            period_duration_seconds)
+
 
 class IrqService:
 

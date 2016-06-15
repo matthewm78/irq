@@ -1,7 +1,7 @@
 from irqapi.daos import InterruptTsdbDao, ProcInterruptsDao, SmpAffinityDao
 from irqapi.services import InterruptTotalsParser, InterruptService, IrqService
-from irqapi.models import (irq_fields, interrupt_totals_fields, irq_info_fields,
-                            irq_cpu_affinity_fields, interrupt_totals_for_period_fields)
+from irqapi.models import (irq_fields, interrupts_for_period_for_cpu_fields, irq_info_fields,
+                            irq_cpu_affinity_fields, interrupts_for_period_fields)
 from irqapi.tsdb import InterruptTsdbThread
 
 import multiprocessing
@@ -40,7 +40,15 @@ interrupt_service = InterruptService(interrupt_tsdb_dao)
 def get_interrupts_for_period():
     period_duration_seconds = int(request.args.get('period_seconds', 60))
     interrupts_for_period = interrupt_service.get_interrupts_for_period(period_duration_seconds)
-    return jsonify(marshal(interrupts_for_period, interrupt_totals_for_period_fields))
+    return jsonify(marshal(interrupts_for_period, interrupts_for_period_fields))
+
+@app.route('/interrupts/cpu/<int:cpu_num>', methods=['GET'])
+def get_interrupts_for_period_for_cpu(cpu_num):
+    period_duration_seconds = int(request.args.get('period_seconds', 60))
+    interrupts_for_period_for_cpu = interrupt_service.get_interrupts_for_period_for_cpu(
+        cpu_num,
+        period_duration_seconds)
+    return jsonify(marshal(interrupts_for_period_for_cpu, interrupts_for_period_for_cpu_fields))
 
 @app.route('/irqs', methods=['GET'])
 def get_irqs():

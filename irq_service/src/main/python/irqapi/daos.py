@@ -1,4 +1,4 @@
-from irqapi.models import Irq, InterruptTotalsForPeriod
+from irqapi.models import Irq, InterruptTotalsForPeriod, InterruptTotalsForPeriodForCpu
 import re
 import time
 
@@ -20,6 +20,16 @@ class InterruptTsdbDao:
             interrupts_for_period_per_cpu,
             period_duration_seconds,
             self.num_cpus)
+
+    def get_interrupts_for_period_for_cpu(self, cpu_num, period_duration_seconds):
+        totals_for_period = self.get_interrupts_for_period(period_duration_seconds)
+
+        return InterruptTotalsForPeriodForCpu(
+            totals_for_period.num_interrupts_per_cpu[cpu_num],
+            totals_for_period.percent_interrupts_per_cpu[cpu_num],
+            period_duration_seconds,
+            self.num_cpus,
+            totals_for_period.num_interrupts_all_cpus)
 
     def _find_start_end_interrupt_totals(self, start_time_unix):
         start_totals = []

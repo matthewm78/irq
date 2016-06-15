@@ -16,9 +16,17 @@ interrupt_totals_fields = {
     'num_interrupts_per_cpu': fields.List(fields.Integer)
 }
 
-interrupt_totals_for_period_fields = {
+interrupts_for_period_fields = {
     'num_interrupts_per_cpu': fields.List(fields.Integer),
     'percent_interrupts_per_cpu': fields.List(fields.Float),
+    'num_interrupts_all_cpus': fields.Integer,
+    'period_duration_seconds': fields.Integer,
+    'num_cpus': fields.Integer
+}
+
+interrupts_for_period_for_cpu_fields = {
+    'num_interrupts': fields.Integer,
+    'percent_interrupts': fields.Float,
     'num_interrupts_all_cpus': fields.Integer,
     'period_duration_seconds': fields.Integer,
     'num_cpus': fields.Integer
@@ -46,6 +54,14 @@ class InterruptTotals:
     def __init__(self, num_interrupts_all_cpus, num_interrupts_per_cpu):
         self.num_interrupts_all_cpus = num_interrupts_all_cpus
         self.num_interrupts_per_cpu = num_interrupts_per_cpu
+
+class InterruptTotalsForPeriodForCpu:
+    def __init__(self, num_interrupts, percent_interrupts, period_duration_seconds, num_cpus, num_interrupts_all_cpus) :
+        self.num_interrupts = num_interrupts
+        self.percent_interrupts = percent_interrupts
+        self.period_duration_seconds = period_duration_seconds
+        self.num_cpus = num_cpus
+        self.num_interrupts_all_cpus = num_interrupts_all_cpus
 
 class InterruptTotalsForPeriod:
     def __init__(self, num_interrupts_per_cpu, period_duration_seconds, num_cpus) :
