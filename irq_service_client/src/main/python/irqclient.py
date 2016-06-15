@@ -1,5 +1,4 @@
 import requests
-import json
 from prettytable import PrettyTable
 
 class PrintHelper:
@@ -13,10 +12,10 @@ class PrintHelper:
         self.out_stream.write(table.get_string() + "\n")
 
     def print_interrupts(self, interrupts):
-        num_interrupts_all_cpus = interrupts['totals']['num_interrupts_all_cpus']
+        # num_interrupts_all_cpus = interrupts['totals']['num_interrupts_all_cpus']
         num_interrupts_per_cpu = interrupts['totals']['num_interrupts_per_cpu']
 
-        irqs = interrupts['interrupts']
+        irqs = interrupts['irqs']
         num_cpus = len(irqs[0]['num_interrupts_per_cpu'])
 
         cpu_columns = []
@@ -77,19 +76,19 @@ class IrqClient:
         self.api = api
 
     def get_interrupts(self):
-        response_dict = self.api.do_get("/interrupts")
+        response_dict = self.api.do_get("/irqs")
         return response_dict
 
-    def get_interrupt_totals(self):
-        response_dict = self.api.do_get("/interrupts/totals")
-        return response_dict
+    # def get_interrupt_totals(self):
+    #     response_dict = self.api.do_get("/interrupts/totals")
+    #     return response_dict
 
     def get_irq_cpu_affinity(self, irq):
-        response_dict = self.api.do_get("/interrupts/{}/cpu_affinity".format(irq))
+        response_dict = self.api.do_get("/irqs/{}/cpu_affinity".format(irq))
         return response_dict
 
     def set_irq_cpu_affinity(self, irq, cpu_affinity_mask):
-        path = "/interrupts/{}/cpu_affinity".format(irq)
+        path = "/irqs/{}/cpu_affinity".format(irq)
         put_data = { 'cpu_affinity_mask': cpu_affinity_mask }
         response = self.api.do_put(path, put_data)
         return response
