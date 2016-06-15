@@ -81,5 +81,5 @@ def run():
         INTERRUPT_TSDB_SAMPLING_INTERVAL_SECONDS)
 
     tsdb_thread.start()
-    app.run(debug=True, use_reloader=True)
+    app.run(debug=True, use_reloader=True, host="0.0.0.0")
     tsdb_thread.join()

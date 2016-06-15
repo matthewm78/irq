@@ -14,5 +14,6 @@ default_task = "publish"
 def set_properties(project):
     project.depends_on("flask==0.11.1")
     project.depends_on("flask-restful==0.3.5")
+    project.build_depends_on('xmlrunner')
 
     project.set_property('distutils_console_scripts', ['irqservice=irqapi.main:run'])
