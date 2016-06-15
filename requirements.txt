@@ -1,6 +1,6 @@
-pybuilder
-prettytable
-requests
-httmock
-flask
-flask-restful
+pybuilder==0.11.8
+prettytable==0.7.2
+requests-2.10.0
+httmock==1.2.5
+flask==0.11.1
+flask-restful==0.3.5
