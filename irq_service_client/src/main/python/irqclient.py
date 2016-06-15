@@ -44,16 +44,18 @@ class PrintHelper:
         self.out_stream.write(
             "\nPeriod duration (secs): {}\n\n".format(interrupt_totals['period_duration_seconds']))
 
-        # num_interrupts_all_cpus = interrupt_totals['num_interrupts_all_cpus']
+        num_interrupts_all_cpus = interrupt_totals['num_interrupts_all_cpus']
         num_interrupts_per_cpu = interrupt_totals['num_interrupts_per_cpu']
+        percent_interrupts_per_cpu = interrupt_totals['percent_interrupts_per_cpu']
 
-        table = PrettyTable(["Cpu #", "Total Interrupts"])
+        table = PrettyTable(["Cpu #", "Total Interrupts", "Percent Interrupts"])
         for i in range(0, len(num_interrupts_per_cpu)):
             table.add_row([
-                "CPU{}".format(i),
-                num_interrupts_per_cpu[i]
+                "{}".format(i),
+                num_interrupts_per_cpu[i],
+                "{}%".format(round(percent_interrupts_per_cpu[i], 1))
             ])
-        # table.add_row(["Total:", num_interrupts_all_cpus])
+        table.add_row(["Total:", num_interrupts_all_cpus, ""])
 
         self.out_stream.write(table.get_string() + "\n")
 
