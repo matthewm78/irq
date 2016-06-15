@@ -38,7 +38,7 @@ interrupt_service = InterruptService(interrupt_tsdb_dao)
 #------------------------------------------------------------------------------
 @app.route('/interrupts', methods=['GET'])
 def get_interrupts_for_period():
-    interrupts_for_period = interrupt_service.get_interrupts_for_period(30)
+    interrupts_for_period = interrupt_service.get_interrupts_for_period(100)
     return jsonify(marshal(interrupts_for_period, interrupt_totals_for_period_fields))
 
 @app.route('/irqs', methods=['GET'])

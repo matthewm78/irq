@@ -11,30 +11,31 @@ class InterruptTsdbDao:
     def get_interrupts_for_period(self, period_duration_seconds):
         now = time.time()
         start_time_unix = now - period_duration_seconds
-        start_line_parts, end_line_parts = self._find_start_end_tsdb_lines(start_time_unix)
-        print("Start line parts -> {}".format(start_line_parts))
-        print("End line parts -> {}".format(end_line_parts))
+        start_totals, end_totals = self._find_start_end_interrupt_totals(start_time_unix)
+        interrupts_for_period_per_cpu = [end - start for start, end in zip(start_totals, end_totals)]
 
-        return InterruptTotalsForPeriod([1,2], period_duration_seconds, self.num_cpus)
+        print("Diff line parts -> {}".format(interrupts_for_period_per_cpu))
 
-    def _find_start_end_tsdb_lines(self, start_time_unix):
-        start_line_parts = []
-        end_line_parts = []
+        return InterruptTotalsForPeriod(
+            interrupts_for_period_per_cpu,
+            period_duration_seconds,
+            self.num_cpus)
+
+    def _find_start_end_interrupt_totals(self, start_time_unix):
+        start_totals = []
+        end_totals = []
         with open(self.interrupt_tsdb_file, 'r') as itf:
             match_found = False
             for line in itf.readlines():
-                line_parts = line.split(',')
-                line_timestamp = float(line_parts[0])
-
-                print("Timestamp -> {}".format(line_timestamp))
-
+                line_parts = [float(x) for x in line.strip().split(',')]
+                line_timestamp = line_parts[0]
+                line_totals = line_parts[1:]
                 if not match_found and line_timestamp >= start_time_unix:
-                    start_line_parts = line_parts
+                    start_totals = line_totals
                     match_found = True
-                    print("Match -> {}".format(line))
-            end_line_parts = line_parts
+            end_totals = line_totals
 
-        return start_line_parts, end_line_parts
+        return start_totals, end_totals
 
 
 class ProcInterruptsDao:
