@@ -1,0 +1,30 @@
+- name: setup
+  hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: python3-pip
+        state: latest
+        update_cache: yes
+        cache_valid_time: 300
+
+    - name: Install PyBuilder to build pip tarball
+      pip:
+        requirements: /vagrant/vagrant-requirements.txt
+        executable: pip3
+
+    - name: Install PyBuilder dependencies for service project
+      command: pyb install_dependencies
+      args:
+        chdir: /vagrant/irq_service
+
+    - name: Create IRQ service distribution
+      command: pyb -vvvv
+      args:
+        chdir: /vagrant/irq_service
+
+    - name: Install IRQ service distribution via pip
+      pip:
+        name: "file:///vagrant/irq_service/target/dist/irqapi-1.0.dev0/dist/irqapi-1.0.dev0.tar.gz"
