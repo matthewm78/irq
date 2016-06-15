@@ -11,11 +11,11 @@ class PrintHelper:
 
         self.out_stream.write(table.get_string() + "\n")
 
-    def print_interrupts(self, interrupts):
+    def print_irq_info(self, irq_info):
         # num_interrupts_all_cpus = interrupts['totals']['num_interrupts_all_cpus']
-        num_interrupts_per_cpu = interrupts['totals']['num_interrupts_per_cpu']
+        num_interrupts_per_cpu = irq_info['totals']['num_interrupts_per_cpu']
 
-        irqs = interrupts['irqs']
+        irqs = irq_info['irqs']
         num_cpus = len(irqs[0]['num_interrupts_per_cpu'])
 
         cpu_columns = []
@@ -40,8 +40,11 @@ class PrintHelper:
 
         self.out_stream.write(table.get_string() + "\n")
 
-    def print_interrupt_totals(self, interrupt_totals):
-        num_interrupts_all_cpus = interrupt_totals['num_interrupts_all_cpus']
+    def print_interrupts(self, interrupt_totals):
+        self.out_stream.write(
+            "\nPeriod duration (secs): {}\n\n".format(interrupt_totals['period_duration_seconds']))
+
+        # num_interrupts_all_cpus = interrupt_totals['num_interrupts_all_cpus']
         num_interrupts_per_cpu = interrupt_totals['num_interrupts_per_cpu']
 
         table = PrettyTable(["Cpu #", "Total Interrupts"])
@@ -50,7 +53,7 @@ class PrintHelper:
                 "CPU{}".format(i),
                 num_interrupts_per_cpu[i]
             ])
-        table.add_row(["Total:", num_interrupts_all_cpus])
+        # table.add_row(["Total:", num_interrupts_all_cpus])
 
         self.out_stream.write(table.get_string() + "\n")
 
@@ -76,13 +79,14 @@ class IrqClient:
     def __init__(self, api):
         self.api = api
 
-    def get_interrupts(self):
-        response_dict = self.api.do_get("/irqs")
+    def get_interrupts_for_period(self, period_duration_seconds):
+        response_dict = self.api.do_get(
+            "/interrupts?period_seconds={}".format(period_duration_seconds))
         return response_dict
 
-    # def get_interrupt_totals(self):
-    #     response_dict = self.api.do_get("/interrupts/totals")
-    #     return response_dict
+    def get_irq_info(self):
+        response_dict = self.api.do_get("/irqs")
+        return response_dict
 
     def get_irq_cpu_affinity(self, irq):
         response_dict = self.api.do_get("/irqs/{}/cpu_affinity".format(irq))
