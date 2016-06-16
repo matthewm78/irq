@@ -87,7 +87,7 @@ class IrqBalancingRecommendationPrinter:
 
 class AlternatingNextMaxIrqBalancer:
     """
-    An implementation of a simple IRQ balancing algorithm.
+    A a simple algorithm to balance IRQs across a set of CPUs.
 
     The algorithm works by sorting all IRQs by their total # of interrupts across
     all CPUs.  It then takes the IRQ with the most interrupt and places it at
@@ -102,7 +102,7 @@ class AlternatingNextMaxIrqBalancer:
 
     def balance_irqs(self, irqs):
         """
-        Balances a set of IRQs provided with their with total # of interrupts.
+        Balances a set of IRQs across a set # of CPUs based on total interrupts.
 
         It takes a set of IRQs, balances them based on its algorithm and returns
         a recommendation that details which IRQs should be pinned to which CPUs.
@@ -129,11 +129,11 @@ class AlternatingNextMaxIrqBalancer:
 
 
 class ProcInterruptsParser:
-    """V
+    """
     Parser that extracts IRQ information from a modified /proc/interrupts file.
     """
 
-    def parse_file(self, proc_interrupts_file):
+    def parse_file(self, proc_interrupts_file, num_cpus):
         """
         Parse a modified /proc/interrupts into an array of IRQ objects.
         """
@@ -142,18 +142,21 @@ class ProcInterruptsParser:
 
         with open(proc_interrupts_file) as pif:
             for line in pif:
-                parsed_irq = self.parse_line(line)
+                parsed_irq = self.parse_line(line, num_cpus)
                 parsed_irqs.append(parsed_irq)
 
         return parsed_irqs
 
-    def parse_line(self, interrupts_line):
+    def parse_line(self, interrupts_line, num_cpus):
         """
         Parse a individual line in /proc/interrupts into an IRQ object.
         """
+        cpu_regex = '(\d+)\s+' * num_cpus
+        interrupts_line_regex = '(\d+):\s+{}([\w-]+)\s+(.*)'.format(cpu_regex)
 
-        interrupts_line_regex = re.compile('(\d+):\s+(\d+)\s+(\d+)\s+([\w-]+)\s+(.*)')
-        interrupts_line_match = interrupts_line_regex.search(interrupts_line)
+        interrupts_line_compiled = re.compile(interrupts_line_regex)
+
+        interrupts_line_match = interrupts_line_compiled.search(interrupts_line)
 
         irq_num = interrupts_line_match.group(1)
         device_name = interrupts_line_match.group(5)
@@ -169,10 +172,10 @@ if __name__ == '__main__':
     import sys
 
     proc_interrupts_file = sys.argv[1]
-    num_cpus = sys.argv[2]
+    num_cpus = int(sys.argv[2])
 
     proc_interrupts_parser = ProcInterruptsParser()
-    parsed_irqs = proc_interrupts_parser.parse_file(proc_interrupts_file)
+    parsed_irqs = proc_interrupts_parser.parse_file(proc_interrupts_file, num_cpus)
 
     irq_balancer = AlternatingNextMaxIrqBalancer(num_cpus)
     balance_irqs_out = irq_balancer.balance_irqs(parsed_irqs)
