@@ -1,7 +1,10 @@
 # Overview
+
 This project is for the IRQ service problem.  It creates a REST API using Flask.
 
+
 # Usage
+
 This project contains setup files so that you can easily install and run the service
 inside a Vagrant.  There is a `Vagrantfile` at the root of the project that will create
 an `ubuntu/trusty64` instance and request to set it up with two CPU cores. The reason
@@ -25,6 +28,11 @@ vagrant up
 ./create-inventory
 ansible-playbook -i .vagrant/inventory playbook.yml
 ```
+
+## Host / Port Information
+
+The service is set to bind to the wildcard address `0.0.0.0` and listen on port `5000` by default.
+
 
 # API Docs
 
