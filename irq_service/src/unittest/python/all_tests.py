@@ -1,6 +1,6 @@
 from irqapi.models import Irq
 from irqapi.daos import ProcInterruptsDao
-from irqapi.services import InterruptTotalsParser
+from irqapi.util import InterruptTotalsParser
 
 import unittest
 

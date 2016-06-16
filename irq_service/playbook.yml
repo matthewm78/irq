@@ -28,3 +28,18 @@
     - name: Install the IRQ service distribution via pip
       pip:
         name: "file:///vagrant/target/dist/irqapi-1.0.dev0/dist/irqapi-1.0.dev0.tar.gz"
+
+    - name: Install Upstart config for IRQ service
+      copy:
+        src: irqservice-upstart.conf
+        dest: /etc/init/irqservice.conf
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Ensure IRQ service is started and enabled
+      service:
+        name: irqservice
+        state: started
+        enabled: yes
+
