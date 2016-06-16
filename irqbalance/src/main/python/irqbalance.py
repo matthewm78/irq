@@ -169,11 +169,12 @@ if __name__ == '__main__':
     import sys
 
     proc_interrupts_file = sys.argv[1]
+    num_cpus = sys.argv[2]
 
     proc_interrupts_parser = ProcInterruptsParser()
     parsed_irqs = proc_interrupts_parser.parse_file(proc_interrupts_file)
 
-    irq_balancer = AlternatingNextMaxIrqBalancer(2)
+    irq_balancer = AlternatingNextMaxIrqBalancer(num_cpus)
     balance_irqs_out = irq_balancer.balance_irqs(parsed_irqs)
 
     recommendation_printer = IrqBalancingRecommendationPrinter()
