@@ -21,14 +21,14 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--host',
-        required=True,
+        required=False,
         metavar='host',
         type=str,
         nargs='?',
-        default='localhost',
+        default='127.0.0.1',
         help='host of API web service')
     parser.add_argument('--port',
-        required=True,
+        required=False,
         metavar='port',
         type=str,
         nargs='?',
