@@ -25,9 +25,10 @@ create a distribution with a `setup.py` file properly configured with things suc
 as project name, version, dependencies and console scripts.
 
 
-# Assumptions / Caveats
+# Assumptions / Limitations / Caveats
 This section outlines any assumptions made, known limitations and caveats related
-to the designed projects.
+to the designed projects.  In particular, it highlights areas I would have liked
+to done more with if I had had the time.  
 
 * I started the project doing test-driven development but had to abandon that for time
 reasons; the irqbalance project was the 1st one written so you can see examples there of some of the types of tests I was writing; as things progressed, my unit test style and
@@ -37,11 +38,16 @@ unified and coherent; I also would normally have a larger set of high-level inte
 tests, particularly in the client project where a mock web service would be wired
 into the client during testing to it was actually making test requests over the wire.
 * I had never used Flask before this project so I'm sure there are more elegant
-ways to organize a Flask project and code and configuration.
+ways to organize a Flask project and code and configuration; I would definitely have liked
+to abstracted the configuration away better if I had more time.
 * error handling was not included in any of the code due to time constraints; in
 a real project though, there would be a multitude of error handling code included
 to do things like validating input, returning proper HTTP status codes, not emitting
 stack traces for exceptions, building custom exception classes and handlers, etc.
+* I would have integrated logging facilities
+* I'm new to threading in Python so I didn't have time to understand the details of how to
+properly handle the background thread on the service project; the background thread
+currently does not stop gracefully and that would need to be remedied.
 
 ## irq_service
 The IRQ service makes uses of a background thread that essentially is creating
@@ -56,4 +62,4 @@ database is implemented as well as how it is accessed/used would be:
 downsampling capability
 * access to the DB to lookup relevant items are essentially "full-table scans"; these
 are not efficient ways to lookup data
-
+* the background thread does not handle stopping gracefully
