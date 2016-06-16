@@ -1,8 +1,12 @@
 #!/usr/bin/python
 
+#------------------------------------------------------------------------------
+# A simple script for starting the IRQ service locally.
+# Your PYTHONPATH must be set to be able to load the irqapi modules.
+#------------------------------------------------------------------------------
+
 # export FLASK_APP=irqapi.main
 # export FLASK_DEBUG=1
-
 # flask run
 
 from irqapi import main

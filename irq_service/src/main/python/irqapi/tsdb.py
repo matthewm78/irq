@@ -2,6 +2,13 @@ import time
 from threading import Thread
 
 class InterruptTsdbThread(Thread):
+    """
+    A thread used to implement a basic time-series database.
+
+    The thread peridiocally samples /proc/interrupts, parses out per-cpu interrupt
+    counts and then writes the counts to a CSV with a Unix timestamp.
+    """
+
     def __init__(self, irq_service, interrupt_db_file, sampling_interval_seconds):
         self.irq_service = irq_service
         self.interrupt_db_file = interrupt_db_file
@@ -9,7 +16,6 @@ class InterruptTsdbThread(Thread):
         Thread.__init__(self)
 
     def run(self):
-        print("--TSDB Starting --------------------------------------------------------")
         while True:
             with open(self.interrupt_db_file, 'a+') as interrupt_db_fh:
                 totals = self.irq_service.get_interrupt_totals()

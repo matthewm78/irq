@@ -25,3 +25,20 @@ vagrant up
 ./create-inventory
 ansible-playbook -i .vagrant/inventory playbook.yml
 ```
+
+# API Docs
+
+```
+GET /interrupts - get # of interrupts per CPU for a specified time period
+  * Query param: period_seconds - num seconds prior to NOW to get interrupt counts for
+
+GET /interrupts/cpu/<cpu_num> - get # of interrupts for a specific CPU for a specified time period
+  * Query param: period_seconds - num seconds prior to NOW to get interrupt counts for
+
+GET /irqs - get info about all the IRQs on the system & current interrupt totals
+
+GET /irqs/<irq_num>/cpu_affinity - get the current CPU affinity mask for an IRQ
+
+PUT /irqs/<irq_num>/cpu_affinity - set the current CPU affinity mask for an IRQ
+  * Request body: cpu_affinity_mask - mask specified in same format as smp_affinity file (ie 'fff1')
+```

@@ -3,6 +3,11 @@ import re
 import time
 
 class InterruptTsdbDao:
+    """
+    A class for accessing data contained in an Interrupts time-series DB.
+
+    This implementation reads data from a CSV-based implementation.
+    """
 
     def __init__(self, interrupt_tsdb_file, num_cpus):
         self.interrupt_tsdb_file = interrupt_tsdb_file
@@ -13,8 +18,6 @@ class InterruptTsdbDao:
         start_time_unix = now - period_duration_seconds
         start_totals, end_totals = self._find_start_end_interrupt_totals(start_time_unix)
         interrupts_for_period_per_cpu = [end - start for start, end in zip(start_totals, end_totals)]
-
-        print("Diff line parts -> {}".format(interrupts_for_period_per_cpu))
 
         return InterruptTotalsForPeriod(
             interrupts_for_period_per_cpu,
@@ -50,6 +53,9 @@ class InterruptTsdbDao:
 
 
 class ProcInterruptsDao:
+    """
+    A class for parsing IRQ info from /proc/interrupts
+    """
 
     def __init__(self, proc_interrupts_file, num_cpus):
         self.proc_interrupts_file = proc_interrupts_file
@@ -92,6 +98,9 @@ class ProcInterruptsDao:
 
 
 class SmpAffinityDao:
+    """
+    A class for parsing smp_affinity proc files to get CPU affinity for IRQs
+    """
 
     def __init__(self, smp_affinity_file_pattern):
         self.smp_affinity_file_pattern = smp_affinity_file_pattern

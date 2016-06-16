@@ -1,12 +1,14 @@
 from irqapi.daos import InterruptTsdbDao, ProcInterruptsDao, SmpAffinityDao
-from irqapi.models import (irq_fields, interrupts_for_period_for_cpu_fields, irq_info_fields,
+from irqapi.models import (interrupts_for_period_for_cpu_fields, irq_info_fields,
                             irq_cpu_affinity_fields, interrupts_for_period_fields)
-from irqapi.services import InterruptTotalsParser, InterruptService, IrqService
+from irqapi.services import InterruptService, IrqService
+from irqapi.util import InterruptTotalsParser
 from irqapi.tsdb import InterruptTsdbThread
 
-import multiprocessing
 from flask import Flask, jsonify, request
 from flask.ext.restful import marshal
+
+import multiprocessing
 
 #------------------------------------------------------------------------------
 # Initialize Flask
@@ -18,6 +20,7 @@ app = Flask(__name__, static_url_path="")
 #------------------------------------------------------------------------------
 CPU_AFFINITY_IRQ_FILE_PATTERN = '/proc/irq/{}/smp_affinity'
 DEBUG = False
+DEFAULT_INTERRUPT_PERIOD_SECONDS = 60
 HOST_BIND_IP = '0.0.0.0'
 INTERRUPT_TSDB_FILE = '/tmp/proc_interrupts.db'
 INTERRUPT_TSDB_SAMPLING_INTERVAL_SECONDS = 5
@@ -43,13 +46,13 @@ interrupt_service = InterruptService(interrupt_tsdb_dao)
 #------------------------------------------------------------------------------
 @app.route('/interrupts', methods=['GET'])
 def get_interrupts_for_period():
-    period_duration_seconds = int(request.args.get('period_seconds', 60))
+    period_duration_seconds = int(request.args.get('period_seconds', DEFAULT_INTERRUPT_PERIOD_SECONDS))
     interrupts_for_period = interrupt_service.get_interrupts_for_period(period_duration_seconds)
     return jsonify(marshal(interrupts_for_period, interrupts_for_period_fields))
 
 @app.route('/interrupts/cpu/<int:cpu_num>', methods=['GET'])
 def get_interrupts_for_period_for_cpu(cpu_num):
-    period_duration_seconds = int(request.args.get('period_seconds', 60))
+    period_duration_seconds = int(request.args.get('period_seconds', DEFAULT_INTERRUPT_PERIOD_SECONDS))
     interrupts_for_period_for_cpu = interrupt_service.get_interrupts_for_period_for_cpu(
         cpu_num,
         period_duration_seconds)
