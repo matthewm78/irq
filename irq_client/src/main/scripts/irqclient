@@ -35,7 +35,8 @@ def main():
         default='5000',
         help='port of API web service')
 
-    subparsers = parser.add_subparsers(title='commands')
+    subparsers = parser.add_subparsers(title='commands', dest='command')
+    subparsers.required = True
 
     show_irq_info_parser = subparsers.add_parser('show_irq_info')
     show_irq_info_parser.set_defaults(action='show_irq_info')
