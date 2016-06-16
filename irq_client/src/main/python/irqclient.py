@@ -2,6 +2,13 @@ import requests
 from prettytable import PrettyTable
 
 class PrintHelper:
+    """
+    Class with helper methods for printing various CLI outputs in a nice format.
+
+    This class was kept separate from the client class because it doesn't need
+    to be concerned with formatting the view of the data it presents.
+    """
+
     def __init__(self, out_stream):
         self.out_stream = out_stream
 
@@ -75,6 +82,10 @@ class PrintHelper:
         self.out_stream.write(table.get_string() + "\n")
 
 class IrqServiceApi:
+    """
+    A simplified interface over the HTTP calls made to the REST API.
+    """
+
     def __init__(self, host, port=80):
         self.host = host
         self.port = port
@@ -91,6 +102,13 @@ class IrqServiceApi:
 
 
 class IrqClient:
+    """
+    Provides a high-level interface to the IRQ service.
+
+    The purpose of this class is to provide a simple interface to users that hides
+    the details of the underlying API calls.  It parses input parameters and then
+    delegates to the API object for the HTTP calls.
+    """
 
     def __init__(self, api):
         self.api = api

@@ -11,6 +11,13 @@ def get_irq_client(host, port):
 
 
 def main():
+    """
+    A command-line tool that makes using the IRQ web service easier.
+
+    It provides several commands to a user and then formats the results of the
+    commands in an easy-to-read table format.
+    """
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--host',
@@ -70,8 +77,6 @@ def main():
 
     args = parser.parse_args()
     action = args.action
-
-    print(args)
 
     client = get_irq_client(args.host, args.port)
     print_helper = irqclient.PrintHelper(sys.stdout)
