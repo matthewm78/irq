@@ -4,12 +4,15 @@ import irqbalance
 
 class ProcInterruptsParserIntegrationTest(unittest.TestCase):
 
+    NUM_CPUS = 2
+
     def setUp(self):
         self.proc_interrupts_parser = irqbalance.ProcInterruptsParser()
 
     def test_parse_file(self):
         tmp_irqs = self.proc_interrupts_parser.parse_file(
-            'src/unittest/python/basic_proc_interrupts.txt')
+            'src/unittest/python/basic_proc_interrupts.txt',
+            self.NUM_CPUS)
 
         self.assertEquals(2, len(tmp_irqs))
 
