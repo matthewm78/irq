@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set +errexit
+
+HOST_GROUP=all
+GENERATED_INVENTORY_FILE=./.vagrant/inventory
+VAGRANT_IP=$(vagrant ssh-config | grep HostName | sed -r 's|.*HostName ([0-9.]*)$|\1|')
+VAGRANT_SSH_PORT=$(vagrant ssh-config | grep Port | sed -r 's|.*Port (2[0-9]*)$|\1|')
+VAGRANT_PRIVATE_KEY=$(vagrant ssh-config | sed -nr 's|.*IdentityFile (.*)$|\1|p')
+
+cat <<EOF | tee "$GENERATED_INVENTORY_FILE"
+[$HOST_GROUP]
+$VAGRANT_IP ansible_ssh_port=$VAGRANT_SSH_PORT ansible_ssh_private_key_file=$VAGRANT_PRIVATE_KEY ansible_user=vagrant
+EOF
+
+echo "Inventory file genereated file at [$GENERATED_INVENTORY_FILE]"
+echo
+echo "You can use it via: [ansible-playbook -i $GENERATED_INVENTORY_FILE playbook.yml -vvvv]"
