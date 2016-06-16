@@ -1,7 +1,7 @@
 from irqapi.daos import InterruptTsdbDao, ProcInterruptsDao, SmpAffinityDao
-from irqapi.services import InterruptTotalsParser, InterruptService, IrqService
 from irqapi.models import (irq_fields, interrupts_for_period_for_cpu_fields, irq_info_fields,
                             irq_cpu_affinity_fields, interrupts_for_period_fields)
+from irqapi.services import InterruptTotalsParser, InterruptService, IrqService
 from irqapi.tsdb import InterruptTsdbThread
 
 import multiprocessing
@@ -16,16 +16,21 @@ app = Flask(__name__, static_url_path="")
 #------------------------------------------------------------------------------
 # Constants
 #------------------------------------------------------------------------------
-PROC_INTERRUPTS_FILE = '/proc/interrupts'
-NUM_CPUS = multiprocessing.cpu_count()
+CPU_AFFINITY_IRQ_FILE_PATTERN = '/proc/irq/{}/smp_affinity'
+DEBUG = False
+HOST_BIND_IP = '0.0.0.0'
 INTERRUPT_TSDB_FILE = '/tmp/proc_interrupts.db'
 INTERRUPT_TSDB_SAMPLING_INTERVAL_SECONDS = 5
+PROC_INTERRUPTS_FILE = '/proc/interrupts'
+USE_RELOADER = False
+
+NUM_CPUS = multiprocessing.cpu_count()
 
 #------------------------------------------------------------------------------
 # Wire-up dependency graph
 #------------------------------------------------------------------------------
 proc_interrupts_dao = ProcInterruptsDao(PROC_INTERRUPTS_FILE, NUM_CPUS)
-smp_affinity_dao = SmpAffinityDao('/proc/irq/{}/smp_affinity')
+smp_affinity_dao = SmpAffinityDao(CPU_AFFINITY_IRQ_FILE_PATTERN)
 interrupt_tsdb_dao = InterruptTsdbDao(INTERRUPT_TSDB_FILE, NUM_CPUS)
 
 interrupt_totals_parser = InterruptTotalsParser()
@@ -55,11 +60,6 @@ def get_irqs():
     irq_info = irq_service.get_irqs()
     return jsonify(marshal(irq_info, irq_info_fields))
 
-# @app.route('/interrupts/totals', methods=['GET'])
-# def get_interrupt_totals():
-#         totals = irq_service.get_interrupt_totals()
-#         return jsonify(marshal(totals, interrupt_totals_fields))
-
 @app.route('/irqs/<string:irq>/cpu_affinity', methods=['GET'])
 def get_irq_cpu_affinity(irq):
     response = irq_service.get_irq_cpu_affinity(irq)
@@ -72,7 +72,7 @@ def set_irq_cpu_affinity(irq):
     return jsonify(marshal(response, irq_cpu_affinity_fields))
 
 #------------------------------------------------------------------------------
-# Run: start Flask & interrupts TSTSDB
+# Run: start Flask & interrupts TSDB
 #------------------------------------------------------------------------------
 def run():
     tsdb_thread = InterruptTsdbThread(
@@ -81,5 +81,5 @@ def run():
         INTERRUPT_TSDB_SAMPLING_INTERVAL_SECONDS)
 
     tsdb_thread.start()
-    app.run(debug=True, use_reloader=True, host="0.0.0.0")
+    app.run(debug=DEBUG, use_reloader=USE_RELOADER, host=HOST_BIND_IP)
     tsdb_thread.join()
