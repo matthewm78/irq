@@ -1,30 +1,35 @@
-import re
 import operator
+import re
 from prettytable import PrettyTable
 
 
-class IrqBalancingRecommendationPrinter:
+class Irq:
+    """
+    Represents an IRQ entry from /proc/interrupts.
 
-    def print_recommendation(self, recommendation, output_stream):
-        table = PrettyTable(['Cpu #', '% of Interrupts', '# Interrupts', 'Pinned IRQs'])
+    Contains helper property for getting total # of interrupts for this IRQ
+    across all CPUs.
+    """
 
-        for cpu_num in range(0, recommendation.num_cpus):
-            percentage_interrupts_for_cpu = recommendation.get_percentage_interrupts_for_cpu(cpu_num)
-            num_interrupts_for_cpu = recommendation.get_num_interrupts_for_cpu(cpu_num)
+    def __init__(self, irq_num, device_name, irq_type, num_interrupts_per_cpu):
+        self.irq_num = irq_num
+        self.device_name = device_name
+        self.irq_type = irq_type
+        self.num_interrupts_per_cpu = num_interrupts_per_cpu
 
-            irqs_for_cpu = recommendation.get_irqs_for_cpu(cpu_num)
-            irq_nums_for_cpu = [irq.irq_num for irq in irqs_for_cpu]
-
-            table.add_row([
-                cpu_num,
-                "{}%".format(percentage_interrupts_for_cpu),
-                num_interrupts_for_cpu,
-                ",".join(irq_nums_for_cpu)])
-
-        output_stream.write(table.get_string() + "\n")
+    @property
+    def total_num_interrupts(self):
+        return sum(self.num_interrupts_per_cpu)
 
 
 class IrqBalancingRecommendation:
+    """
+    Represents a recommendation for which IRQs should be pinned to which CPUs in a system.
+
+    It contains several helper methods for getting metrics about the recommendation,
+    such as how the interrupts are spread across the CPUs of the system by
+    this recommendation as both percentages and counts.
+    """
 
     def __init__(self, num_cpus):
         self.num_cpus = num_cpus
@@ -54,12 +59,55 @@ class IrqBalancingRecommendation:
         return round(percentage_interrupts_for_cpu, round_to_places)
 
 
+class IrqBalancingRecommendationPrinter:
+    """
+    Prints an IRQ balancing recommendation in an easy-to-read manner.
+
+    Used to separate concern of printing from the model object.
+    """
+
+    def print_recommendation(self, recommendation, output_stream):
+        table = PrettyTable(['Cpu #', '% of Interrupts', '# Interrupts', 'Pinned IRQs'])
+
+        for cpu_num in range(0, recommendation.num_cpus):
+            percentage_interrupts_for_cpu = recommendation.get_percentage_interrupts_for_cpu(cpu_num)
+            num_interrupts_for_cpu = recommendation.get_num_interrupts_for_cpu(cpu_num)
+
+            irqs_for_cpu = recommendation.get_irqs_for_cpu(cpu_num)
+            irq_nums_for_cpu = [irq.irq_num for irq in irqs_for_cpu]
+
+            table.add_row([
+                cpu_num,
+                "{}%".format(percentage_interrupts_for_cpu),
+                num_interrupts_for_cpu,
+                ",".join(irq_nums_for_cpu)])
+
+        output_stream.write(table.get_string() + "\n")
+
+
 class AlternatingNextMaxIrqBalancer:
+    """
+    An implementation of a simple IRQ balancing algorithm.
+
+    The algorithm works by sorting all IRQs by their total # of interrupts across
+    all CPUs.  It then takes the IRQ with the most interrupt and places it at
+    CPU0.  It then grabs the IRQ with the next most interrupts and places it on
+    CPU1.  This process repeats until no IRQs are left to place.  During the process
+    when the last CPU is reached during the iteration, the next IRQ is placed at
+    CPU0 and the iteration continues.
+    """
 
     def __init__(self, num_cpus):
         self.num_cpus = num_cpus
 
     def balance_irqs(self, irqs):
+        """
+        Balances a set of IRQs provided with their with total # of interrupts.
+
+        It takes a set of IRQs, balances them based on its algorithm and returns
+        a recommendation that details which IRQs should be pinned to which CPUs.
+        """
+
         recommendation = IrqBalancingRecommendation(self.num_cpus)
         irqs_sorted_by_total_interrupts = self.sort_irqs_by_total(irqs)
 
@@ -81,8 +129,15 @@ class AlternatingNextMaxIrqBalancer:
 
 
 class ProcInterruptsParser:
+    """V
+    Parser that extracts IRQ information from a modified /proc/interrupts file.
+    """
 
     def parse_file(self, proc_interrupts_file):
+        """
+        Parse a modified /proc/interrupts into an array of IRQ objects.
+        """
+
         parsed_irqs = []
 
         with open(proc_interrupts_file) as pif:
@@ -93,6 +148,10 @@ class ProcInterruptsParser:
         return parsed_irqs
 
     def parse_line(self, interrupts_line):
+        """
+        Parse a individual line in /proc/interrupts into an IRQ object.
+        """
+
         interrupts_line_regex = re.compile('(\d+):\s+(\d+)\s+(\d+)\s+([\w-]+)\s+(.*)')
         interrupts_line_match = interrupts_line_regex.search(interrupts_line)
 
@@ -104,18 +163,6 @@ class ProcInterruptsParser:
         num_interrupts_per_cpu = [num_interrupts_cpu0, num_interrupts_cpu1]
 
         return Irq(irq_num, device_name, irq_type, num_interrupts_per_cpu)
-
-
-class Irq:
-    def __init__(self, irq_num, device_name, irq_type, num_interrupts_per_cpu):
-        self.irq_num = irq_num
-        self.device_name = device_name
-        self.irq_type = irq_type
-        self.num_interrupts_per_cpu = num_interrupts_per_cpu
-
-    @property
-    def total_num_interrupts(self):
-        return sum(self.num_interrupts_per_cpu)
 
 
 if __name__ == '__main__':
